@@ -24,15 +24,14 @@ $isLockout = ($notifType === 'error' && stripos($notifMessage, 'locked') !== fal
 if ($isLockout) $notifType = 'warning';
 $inputErrorClass = ($notifType === 'error') ? 'input-error' : '';
 
-$logoImage = APP_URL . '/assets/img/loginlogo.png';
-$bgImage   = APP_URL . '/assets/img/background.jpg';
+$bgImage = APP_URL . '/assets/img/background.jpg';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Awards Database | Australia Awards</title>
+  <title>Login | Short Course Database</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -51,32 +50,29 @@ $bgImage   = APP_URL . '/assets/img/background.jpg';
       --border:        #DDE5EC;
     }
 
-    html, body { height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; }
-    body { display: flex; min-height: 100vh; flex-direction: column; }
-    .main-wrap { display: flex; flex: 1; overflow: hidden; }
+    html, body { height: 100%; font-family: 'Inter', sans-serif; }
 
-    /* ── LOGIN PANEL ──────────────────────────────────────────── */
+    body {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px; position: relative;
+      background-image: url('<?= e($bgImage) ?>');
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background: linear-gradient(160deg, rgba(0,49,80,0.85) 0%, rgba(0,49,80,0.65) 100%);
+      z-index: 0;
+    }
+
+    /* ── LOGIN CARD ───────────────────────────────────────────── */
     .login-panel {
-      width: 460px; min-width: 460px; background: var(--white);
-      display: flex; flex-direction: column; justify-content: space-between;
-      padding: 44px 48px 32px; position: relative; z-index: 10;
-      box-shadow: 8px 0 48px rgba(0,0,0,0.14); overflow-y: auto;
+      width: 100%; max-width: 420px; background: var(--white);
+      border-radius: 16px; box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+      padding: 44px 40px 32px; position: relative; z-index: 1;
     }
 
-    .login-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; }
-    .login-logo img { height: 56px; width: auto; object-fit: contain; }
-    .logo-fallback {
-      display: none; width: 50px; height: 50px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      border-radius: 13px; align-items: center; justify-content: center;
-      box-shadow: 0 6px 18px rgba(60,182,206,0.38); flex-shrink: 0;
-    }
-    .logo-fallback i { font-size: 21px; color: var(--white); }
-    .logo-text-wrap .org-name { font-size: 16px; font-weight: 800; color: var(--secondary); line-height: 1.2; }
-    .logo-text-wrap .org-sub  { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
-
-    .login-heading { margin-bottom: 28px; }
-    .login-heading h2 { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.4px; }
+    .login-heading { margin-bottom: 28px; text-align: center; }
+    .login-heading h2 { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.4px; }
     .login-heading p  { font-size: 14px; color: var(--muted); }
 
     /* ── INLINE NOTIFICATION ──────────────────────────────────── */
@@ -144,167 +140,74 @@ $bgImage   = APP_URL . '/assets/img/background.jpg';
     .btn-signin:active { transform: translateY(0); }
     .btn-signin.loading { opacity: 0.75; pointer-events: none; }
 
-    .divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; color: var(--muted); font-size: 12px; }
-    .divider::before, .divider::after { content: ''; flex: 1; border-top: 1px solid var(--border); }
+    .login-footer { text-align: center; font-size: 11.5px; color: #B0BEC8; margin-top: 28px; line-height: 1.6; }
 
-    .return-link { text-align: center; }
-    .return-link a { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); font-weight: 500; text-decoration: none; transition: color 0.2s; }
-    .return-link a:hover { color: var(--secondary); }
-
-    .login-footer { text-align: center; font-size: 11.5px; color: #B0BEC8; margin-top: 32px; line-height: 1.6; }
-
-    /* ── INFO PANEL ───────────────────────────────────────────── */
-    .info-panel { flex: 1; position: relative; background: var(--secondary); display: flex; flex-direction: column; justify-content: flex-end; padding: 60px 56px; overflow: hidden; }
-    .info-bg { position: absolute; inset: 0; background-image: url('<?= e($bgImage) ?>'); background-size: cover; background-position: center; opacity: 0.3; }
-    .info-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,49,80,0.98) 0%, rgba(0,49,80,0.72) 45%, rgba(0,49,80,0.28) 100%); }
-    .info-content { position: relative; z-index: 2; }
-    .info-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(60,182,206,0.15); border: 1px solid rgba(60,182,206,0.35); color: var(--primary); border-radius: 20px; padding: 6px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 22px; }
-    .info-title { font-size: 40px; font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.6px; }
-    .info-title span { color: var(--primary); }
-    .info-desc { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.75; max-width: 420px; margin-bottom: 38px; }
-    .info-features { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 40px; max-width: 480px; }
-    .feature-item { display: flex; align-items: flex-start; gap: 12px; }
-    .feature-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(60,182,206,0.12); border: 1px solid rgba(60,182,206,0.22); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .feature-icon i { font-size: 15px; color: var(--primary); }
-    .feature-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
-    .feature-text span { font-size: 12px; color: rgba(255,255,255,0.48); }
-    .component-strip { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.1); }
-    .comp-tag { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.55); border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
-
-    @media (max-width: 860px) {
-      html, body { overflow: auto; }
-      .main-wrap { flex-direction: column; }
-      .login-panel { width: 100%; min-width: unset; padding: 32px 28px; box-shadow: none; }
-      .info-panel { min-height: 260px; padding: 36px 28px; }
-      .info-features { grid-template-columns: 1fr; }
-      .info-title { font-size: 28px; }
+    @media (max-width: 480px) {
+      .login-panel { padding: 32px 24px 24px; }
     }
   </style>
 </head>
 <body>
 
-<div class="main-wrap">
-
-  <!-- ── LEFT: LOGIN FORM ───────────────────────────────────── -->
   <div class="login-panel">
-    <div>
 
-      <div class="login-logo">
-        <img src="<?= e($logoImage) ?>" alt="Australia Awards"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-        <div class="logo-fallback"><i class="fas fa-graduation-cap"></i></div>
-        <div class="logo-text-wrap">
-          <div class="org-name">Australia Awards</div>
-          <div class="org-sub">Short Course Database</div>
-        </div>
-      </div>
-
-      <div class="login-heading">
-        <h2>Welcome back</h2>
-        <p>Sign in to access the Awards Database</p>
-      </div>
-
-      <?php if ($notifType && $notifMessage): ?>
-      <div class="notif-inline <?= e($notifType) ?>" id="notifInline">
-        <i class="ni-icon fas <?php
-          echo $notifType === 'success' ? 'fa-check-circle'
-             : ($notifType === 'error' ? 'fa-exclamation-circle'
-             : ($notifType === 'info' ? 'fa-info-circle' : 'fa-exclamation-triangle'));
-        ?>"></i>
-        <span class="ni-text"><?= e($notifMessage) ?></span>
-        <button class="ni-close" onclick="closeNotif()" aria-label="Dismiss">&times;</button>
-      </div>
-      <?php endif; ?>
-
-      <form method="post" action="login.php" novalidate id="loginForm">
-        <?= csrf_field() ?>
-        <div class="form-group">
-          <label for="username">Username or Email</label>
-          <div class="input-wrap">
-            <i class="fas fa-user field-icon"></i>
-            <input type="text" id="username" name="username"
-                   placeholder="Enter your username or email"
-                   autocomplete="username" required autofocus
-                   class="<?= $inputErrorClass ?>">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <div class="input-wrap">
-            <i class="fas fa-lock field-icon"></i>
-            <input type="password" id="password" name="password"
-                   placeholder="Enter your password"
-                   autocomplete="current-password" required
-                   class="<?= $inputErrorClass ?>">
-            <button type="button" class="pw-toggle" id="togglePw" aria-label="Toggle password">
-              <i class="fas fa-eye" id="togglePwIcon"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="form-options">
-          <a href="forgot-password.php">Forgot password?</a>
-        </div>
-
-        <button type="submit" class="btn-signin" id="btnSignin">
-          <i class="fas fa-sign-in-alt" id="signinIcon"></i>
-          <span id="signinLabel">Sign In</span>
-        </button>
-      </form>
-
-      <div class="divider">or</div>
-      <div class="return-link">
-        <a href="https://mis.australiaawardspng.org">
-          <i class="fas fa-arrow-left"></i> Return to MIS Homepage
-        </a>
-      </div>
+    <div class="login-heading">
+      <h2>Login to Short Course Database</h2>
     </div>
+
+    <?php if ($notifType && $notifMessage): ?>
+    <div class="notif-inline <?= e($notifType) ?>" id="notifInline">
+      <i class="ni-icon fas <?php
+        echo $notifType === 'success' ? 'fa-check-circle'
+           : ($notifType === 'error' ? 'fa-exclamation-circle'
+           : ($notifType === 'info' ? 'fa-info-circle' : 'fa-exclamation-triangle'));
+      ?>"></i>
+      <span class="ni-text"><?= e($notifMessage) ?></span>
+      <button class="ni-close" onclick="closeNotif()" aria-label="Dismiss">&times;</button>
+    </div>
+    <?php endif; ?>
+
+    <form method="post" action="login.php" novalidate id="loginForm">
+      <?= csrf_field() ?>
+      <div class="form-group">
+        <label for="username">Username or Email</label>
+        <div class="input-wrap">
+          <i class="fas fa-user field-icon"></i>
+          <input type="text" id="username" name="username"
+                 placeholder="Enter your username or email"
+                 autocomplete="username" required autofocus
+                 class="<?= $inputErrorClass ?>">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock field-icon"></i>
+          <input type="password" id="password" name="password"
+                 placeholder="Enter your password"
+                 autocomplete="current-password" required
+                 class="<?= $inputErrorClass ?>">
+          <button type="button" class="pw-toggle" id="togglePw" aria-label="Toggle password">
+            <i class="fas fa-eye" id="togglePwIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <a href="forgot-password.php">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-signin" id="btnSignin">
+        <i class="fas fa-sign-in-alt" id="signinIcon"></i>
+        <span id="signinLabel">Sign In</span>
+      </button>
+    </form>
 
     <div class="login-footer">
-      &copy; <?= date('Y') ?> Australia Awards<br>
-      Short Course Awards Database &mdash; Powered by <strong style="color:#3CB6CE;">MIS</strong>
+      &copy; <?= date('Y') ?> Australia Awards Short Course Database
     </div>
   </div>
-
-  <!-- ── RIGHT: INFO PANEL ──────────────────────────────────── -->
-  <div class="info-panel">
-    <div class="info-bg"></div>
-    <div class="info-overlay"></div>
-    <div class="info-content">
-      <div class="info-badge"><i class="fas fa-award"></i> Staff Portal</div>
-      <h1 class="info-title">Short Course<br> <span>Scholarships</span></h1>
-      <p class="info-desc">Record short course participants, manage their awards, search across thousands of records, and keep every detail in one place.</p>
-      <div class="info-features">
-        <div class="feature-item">
-          <div class="feature-icon"><i class="fas fa-users"></i></div>
-          <div class="feature-text"><strong>Personal Details</strong><span>One record per person</span></div>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon"><i class="fas fa-award"></i></div>
-          <div class="feature-text"><strong>Awards details</strong><span>Multiple awards per person</span></div>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon"><i class="fas fa-magnifying-glass"></i></div>
-          <div class="feature-text"><strong>Smart Search</strong><span>Find anyone instantly</span></div>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
-          <div class="feature-text"><strong>Role-based Access</strong><span>Admin and staff levels</span></div>
-        </div>
-      </div>
-      <div class="component-strip">
-        <span class="comp-tag">Personal Details</span>
-        <span class="comp-tag">Awards</span>
-        <span class="comp-tag">Duplicate Detection</span>
-        <span class="comp-tag">Provinces &amp; Districts</span>
-        <span class="comp-tag">Reports</span>
-        <span class="comp-tag">User Roles</span>
-      </div>
-    </div>
-  </div>
-
-</div>
 
 <script>
 // ── Password toggle ───────────────────────────────────────────
