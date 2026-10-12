@@ -142,10 +142,9 @@ require_once __DIR__ . '/includes/header.php';
               </select>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Date of birth</label>
-              <input type="date" class="form-control" name="date_of_birth">
-              <div class="form-text">Leave blank if unknown.</div>
-            </div>
+              <label class="field-label">Date of birth <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="date_of_birth" required>
+                          </div>
 
             <div class="col-md-6">
               <label class="field-label d-block">Disability</label>
@@ -166,16 +165,16 @@ require_once __DIR__ . '/includes/header.php';
           <span class="section-label"><i class="bi bi-telephone me-1"></i> Contact Details</span>
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="field-label">Home phone</label>
-              <input type="text" class="form-control" name="home_phone">
+              <label class="field-label">Home phone <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="home_phone" required>
             </div>
             <div class="col-md-6">
               <label class="field-label">Work phone</label>
               <input type="text" class="form-control" name="work_phone">
             </div>
             <div class="col-md-12">
-              <label class="field-label">Email address</label>
-              <input type="text" class="form-control" name="email">
+              <label class="field-label">Email address <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" name="email" required>
             </div>
           </div>
 
@@ -185,22 +184,22 @@ require_once __DIR__ . '/includes/header.php';
           <span class="section-label"><i class="bi bi-geo-alt me-1"></i> Location &amp; Employment</span>
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="field-label">Province of residence</label>
-              <select class="form-select" name="province_id" id="provinceSelect"></select>
+              <label class="field-label">Province of residence <span class="text-danger">*</span></label>
+              <select class="form-select" name="province_id" id="provinceSelect" required></select>
             </div>
             <div class="col-md-6">
-              <label class="field-label">District of residence</label>
-              <select class="form-select" name="district_id" id="districtSelect"></select>
+              <label class="field-label">District of residence <span class="text-danger">*</span></label>
+              <select class="form-select" name="district_id" id="districtSelect" required></select>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Organisation <span class="text-danger">*</span></label>
+              <label class="field-label">Organisation <span class="text-muted fw-normal text-lowercase">(optional)</span></label>
               <input type="text" class="form-control" name="organisation" id="organisationInput"
-                     list="organisationList" placeholder="Type the organisation name" required>
+                     list="organisationList" placeholder="Type the organisation name">
               <datalist id="organisationList"></datalist>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Employment category</label>
-              <select class="form-select" name="employment_category_id" id="employmentSelect"></select>
+              <label class="field-label">Employment category <span class="text-danger">*</span></label>
+              <select class="form-select" name="employment_category_id" id="employmentSelect" required></select>
             </div>
           </div>
         </div>
@@ -432,4 +431,4 @@ async function deleteParticipant(id) {
 }
 </script>
 
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>

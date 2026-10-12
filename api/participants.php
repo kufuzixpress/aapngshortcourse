@@ -105,13 +105,18 @@ if ($action === 'save') {
     if ($given === '')  $errors['given_names'] = 'Given names are required.';
     if ($family === '') $errors['family_name'] = 'Family name is required.';
     if (!in_array($gender, ['Female','Male'], true)) $errors['gender'] = 'Select a gender.';
-    if ($dob !== null) {
-        if (!strtotime($dob)) $errors['date_of_birth'] = 'Enter a valid date of birth, or leave it blank if unknown.';
-        elseif (strtotime($dob) > time()) $errors['date_of_birth'] = 'Date of birth cannot be in the future.';
-    }
+    if ($dob === null)                 $errors['date_of_birth'] = 'Date of birth is required.';
+    elseif (!strtotime($dob))          $errors['date_of_birth'] = 'Enter a valid date of birth.';
+    elseif (strtotime($dob) > time())  $errors['date_of_birth'] = 'Date of birth cannot be in the future.';
     if ($disFlag && !$disType) $errors['disability_type_id'] = 'Select the disability type.';
-    if ($orgName === '') $errors['organisation'] = 'Organisation is required.';
-    if ($distId && !$provId) $errors['province_id'] = 'Select the province this district belongs to.';
+    if ($homeP === null) $errors['home_phone'] = 'Home phone is required.';
+    if ($email === null) $errors['email'] = 'Email address is required.';
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors['email'] = 'Enter a valid email address.';
+    if (!$provId) $errors['province_id'] = 'Select the province of residence.';
+    if (!$distId) $errors['district_id'] = 'Select the district of residence.';
+    if (!$empId)  $errors['employment_category_id'] = 'Select an employment category.';
+    // Organisation is optional free text; keep it within the column size.
+    if (mb_strlen($orgName) > 200) $errors['organisation'] = 'Organisation name is too long (max 200 characters).';
 
     // District must belong to the selected province (when both are set).
     if ($provId && $distId) {
@@ -175,12 +180,16 @@ if ($action === 'save') {
     $pdo = db();
 
     // Resolve the typed organisation to its lookup row, creating it if new.
-    $stmt = $pdo->prepare('SELECT id FROM organisations WHERE LOWER(name) = LOWER(?) LIMIT 1');
-    $stmt->execute([$orgName]);
-    $orgId = (int)$stmt->fetchColumn();
-    if (!$orgId) {
-        $pdo->prepare('INSERT INTO organisations (name) VALUES (?)')->execute([$orgName]);
-        $orgId = (int)$pdo->lastInsertId();
+    // Organisation is optional, so a blank entry is stored as NULL.
+    $orgId = null;
+    if ($orgName !== '') {
+        $stmt = $pdo->prepare('SELECT id FROM organisations WHERE LOWER(name) = LOWER(?) LIMIT 1');
+        $stmt->execute([$orgName]);
+        $orgId = (int)$stmt->fetchColumn();
+        if (!$orgId) {
+            $pdo->prepare('INSERT INTO organisations (name) VALUES (?)')->execute([$orgName]);
+            $orgId = (int)$pdo->lastInsertId();
+        }
     }
 
     if ($id) {

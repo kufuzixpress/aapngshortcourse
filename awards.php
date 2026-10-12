@@ -162,12 +162,12 @@ require_once __DIR__ . '/includes/header.php';
               <select class="form-select" name="field_of_study_id" id="fieldSelect" required></select>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Study start date</label>
-              <input type="date" class="form-control" name="study_start_date">
+              <label class="field-label">Study start date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="study_start_date" required>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Study end date</label>
-              <input type="date" class="form-control" name="study_end_date">
+              <label class="field-label">Study end date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="study_end_date" required>
             </div>
           </div>
 
@@ -444,4 +444,4 @@ async function deleteAward(id) {
 }
 </script>
 
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>
