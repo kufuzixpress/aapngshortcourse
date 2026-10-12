@@ -50,7 +50,6 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
   <title>Reset Password | Short Course Database</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -61,13 +60,13 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
       --secondary:     #003150;
       --secondary-mid: #004470;
       --white:         #FFFFFF;
-      --off-white:     #F4F8FA;
-      --muted:         #8A9DB0;
-      --text:          #1E3040;
-      --border:        #DDE5EC;
+      --off-white:     #FFFFFF;
+      --muted:         #747678;
+      --text:          #1B2733;
+      --border:        #CBCCC7;
     }
 
-    html, body { height: 100%; font-family: 'Inter', sans-serif; }
+    html, body { height: 100%; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; }
 
     body {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -89,7 +88,7 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
     }
 
     .login-heading { margin-bottom: 28px; text-align: center; }
-    .login-heading h2 { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.4px; }
+    .login-heading h2 { font-family: 'Times New Roman', Times, Georgia, serif; font-size: 28px; font-weight: 700; color: var(--secondary); margin-bottom: 6px; line-height: 1.2; }
     .login-heading p  { font-size: 14px; color: var(--muted); line-height: 1.5; }
 
     /* ── ALERTS (from show_flashes) ──────────────────────────── */
@@ -111,7 +110,7 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
     .input-wrap input {
       width: 100%; padding: 12px 16px 12px 40px;
       border: 1.5px solid var(--border); border-radius: 8px;
-      font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text);
+      font-size: 14px; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; color: var(--text);
       background: var(--off-white); transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; outline: none;
     }
     .input-wrap input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px var(--primary-glow); }
@@ -121,7 +120,7 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
       width: 100%; padding: 14px;
       background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-mid) 100%);
       color: var(--white); border: none; border-radius: 8px;
-      font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif;
+      font-size: 15px; font-weight: 700; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
       letter-spacing: 0.3px; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 10px;
       transition: transform 0.2s, box-shadow 0.2s;

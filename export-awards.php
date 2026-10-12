@@ -117,62 +117,35 @@ $page_title = 'Export awards';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<style>
-  :root { --primary:#3CB6CE; --secondary:#003150; }
-  .page-title { font-size:22px; font-weight:800; color:var(--secondary); }
-  .page-sub   { font-size:13px; color:#64748B; margin-bottom:16px; }
-
-  .page-card { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
-  .page-card-header { padding:14px 18px; border-bottom:1px solid #EEF2F7; }
-  .page-card-header h5 { margin:0; font-size:13px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:.05em; }
-  .page-card-header h5 i { color:var(--primary); }
-
-  /* Summary strip */
-  .summary-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
-  .sum-card { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); padding:16px 20px; display:flex; align-items:center; gap:14px; }
-  .sum-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
-  .sum-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#94A3B8; }
-  .sum-value { font-size:22px; font-weight:800; color:var(--secondary); }
-
-  /* Filter form */
-  .filter-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#64748B; margin-bottom:5px; display:block; }
-  .form-control, .form-select { border-radius:7px; border-color:#DDE5EC; font-size:13px; }
-  .form-control:focus, .form-select:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(60,182,206,.15); }
-
-  /* Column preview */
-  .col-preview { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
-  .col-tag { background:#EEF2F7; color:var(--secondary); padding:3px 10px; border-radius:5px; font-size:11px; font-weight:600; }
-
-  .btn-export { background:var(--secondary); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:14px; padding:11px 28px; display:flex; align-items:center; gap:8px; transition:background .15s; }
-  .btn-export:hover { background:#00263d; color:#fff; }
-  .btn-reset { background:#F1F5F9; color:#475569; border:none; border-radius:8px; font-weight:600; font-size:13px; padding:11px 20px; }
-  .btn-reset:hover { background:#E2E8F0; color:#334155; }
-</style>
-
-<div class="page-title">Export awards</div>
-<div class="page-sub">Download a flat CSV of all participant and award details for analysis in Excel or similar tools. One row per award — participants with multiple awards appear on multiple rows.</div>
+<div class="page-header">
+  <div>
+    <span class="page-eyebrow">Administration</span>
+    <h1 class="page-title">Export awards</h1>
+    <p class="page-sub">Download a flat CSV of participant and award details for Excel or similar tools. One row per award, so people with several awards appear on several rows.</p>
+  </div>
+</div>
 
 <!-- Summary strip -->
 <div class="summary-strip">
   <div class="sum-card">
-    <div class="sum-icon" style="background:#E0F5F9;color:var(--primary);"><i class="bi bi-award"></i></div>
+    <div class="sum-icon stat-icon-teal"><i class="bi bi-award"></i></div>
     <div>
       <div class="sum-label">Total awards</div>
       <div class="sum-value"><?= number_format($totalAwards) ?></div>
     </div>
   </div>
   <div class="sum-card">
-    <div class="sum-icon" style="background:#EEF2F7;color:var(--secondary);"><i class="bi bi-people"></i></div>
+    <div class="sum-icon stat-icon-navy"><i class="bi bi-people"></i></div>
     <div>
       <div class="sum-label">Participants with awards</div>
       <div class="sum-value"><?= number_format($totalParticipants) ?></div>
     </div>
   </div>
   <div class="sum-card">
-    <div class="sum-icon" style="background:#DCFCE7;color:#15803D;"><i class="bi bi-file-earmark-spreadsheet"></i></div>
+    <div class="sum-icon stat-icon-slate"><i class="bi bi-file-earmark-spreadsheet"></i></div>
     <div>
       <div class="sum-label">Export format</div>
-      <div class="sum-value" style="font-size:15px;font-weight:700;">CSV / Excel</div>
+      <div class="sum-value sum-value-sm">CSV / Excel</div>
     </div>
   </div>
 </div>
@@ -180,9 +153,9 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Filter + export form -->
 <div class="page-card">
   <div class="page-card-header">
-    <h5><i class="bi bi-funnel me-2"></i>Filter before exporting</h5>
+    <h5><i class="bi bi-funnel"></i>Filter before exporting</h5>
   </div>
-  <div class="p-4">
+  <div class="page-card-body">
     <form method="GET" action="export-awards.php">
       <input type="hidden" name="export" value="1">
 
@@ -241,7 +214,7 @@ require_once __DIR__ . '/includes/header.php';
 
       <!-- Column preview -->
       <div class="mb-4">
-        <div class="filter-label" style="margin-bottom:8px;">Columns included in every export</div>
+        <div class="filter-label">Columns included in every export</div>
         <div class="col-preview">
           <?php foreach (['AAPNG ID','Family Name','Given Names','Gender','Date of Birth','Disability',
                           'Disability Type','Home Phone','Work Phone','Email','Province','District',
@@ -253,12 +226,12 @@ require_once __DIR__ . '/includes/header.php';
         </div>
       </div>
 
-      <div class="d-flex gap-2 align-items-center">
-        <button type="submit" class="btn-export">
+      <div class="d-flex gap-2 align-items-center flex-wrap">
+        <button type="submit" class="btn btn-export btn-lg">
           <i class="bi bi-download"></i>Download CSV
         </button>
-        <a href="export-awards.php" class="btn-reset">Clear filters</a>
-        <span class="text-muted ms-2" style="font-size:12px;">
+        <a href="export-awards.php" class="btn btn-reset btn-lg">Clear filters</a>
+        <span class="text-muted small ms-sm-2">
           Leave all filters blank to export everything.
         </span>
       </div>

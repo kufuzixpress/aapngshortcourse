@@ -331,61 +331,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = '';
+$page_title = 'Import awards';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<style>
-  :root {
-    --primary:   #3CB6CE;
-    --secondary: #003150;
-  }
-  .page-title { font-size:22px; font-weight:800; color:var(--secondary); }
-  .page-sub   { font-size:13px; color:#64748B; margin-bottom:16px; }
-
-  /* Page card */
-  .page-card { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); border:none; }
-  .page-card-header { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid #EEF2F7; }
-  .page-card-header h5 { margin:0; font-size:13px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:.05em; }
-  .page-card-header h5 i { color:var(--primary); }
-
-  .btn-primary-custom { background:var(--primary); border-color:var(--primary); color:#fff; border-radius:7px; font-weight:600; font-size:13px; }
-  .btn-primary-custom:hover { background:#2A96AC; border-color:#2A96AC; color:#fff; }
-
-  .import-notes { font-size:12px; color:#64748B; padding-left:18px; }
-  .import-notes li { margin-bottom:5px; }
-  .import-notes code { background:#F1F5F9; color:#0E7490; padding:1px 5px; border-radius:4px; font-size:11px; }
-
-  .form-control, .form-select { border-radius:7px; border-color:#DDE5EC; font-size:13px; }
-  .form-control:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(60,182,206,.15); }
-
-  /* Summary pills */
-  .sum-pill { display:inline-block; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:700; margin-right:6px; }
-  .sum-imported { background:#DCFCE7; color:#15803D; }
-  .sum-skipped  { background:#FEF3C7; color:#92400E; }
-  .sum-error    { background:#FEE2E2; color:#991B1B; }
-
-  /* Results table */
-  #resultsTable thead th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#8A9DB0; font-weight:600; border-top:none; background:#FAFBFC; position:sticky; top:0; z-index:1; }
-  #resultsTable tbody td { font-size:13px; color:#334155; vertical-align:middle; }
-  #resultsTable tbody tr:hover { background:#F8FAFC; }
-  .row-imported { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#DCFCE7; color:#15803D; }
-  .row-skipped  { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#FEF3C7; color:#92400E; }
-  .row-error    { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#FEE2E2; color:#991B1B; }
-</style>
-
-<div class="page-title">Import awards</div>
-<div class="page-sub">Bulk-load award records from a CSV file, linked to participants by AAPNG ID</div>
+<div class="page-header">
+  <div>
+    <span class="page-eyebrow">Administration</span>
+    <h1 class="page-title">Import awards</h1>
+    <p class="page-sub">Bulk-load award records from a CSV file, linked to participants by AAPNG ID.</p>
+  </div>
+  <div class="page-actions">
+    <a href="import-awards.php?template=1" class="btn btn-outline-brand"><i class="bi bi-download"></i>Download template</a>
+  </div>
+</div>
 
 <div class="row g-3">
   <div class="col-lg-5">
     <div class="page-card">
       <div class="page-card-header"><h5><i class="bi bi-upload me-2"></i>Upload awards CSV</h5></div>
-      <div class="p-3">
-        <p class="text-muted" style="font-size:13px;">
+      <div class="page-card-body">
+        <p class="text-muted">
           Each row must contain the person's <strong>AAPNG ID</strong> — that's how the award links to
           the participant. Import all participants first.
-          <a href="import-awards.php?template=1" style="color:var(--primary);font-weight:600;">Download the template</a> to check the headers.
+          <a href="import-awards.php?template=1" class="fw-bold">Download the template</a> to check the headers.
         </p>
         <ul class="import-notes">
           <li>Rows with a <strong>Scholarship code</strong> keep it; blank codes are generated (SCH-2024-0001).</li>
@@ -397,16 +366,17 @@ require_once __DIR__ . '/includes/header.php';
         </ul>
         <form method="post" enctype="multipart/form-data">
           <?= csrf_field() ?>
-          <div class="mb-3">
-            <input type="file" name="csv" class="form-control" accept=".csv,text/csv" required>
+          <div class="upload-zone mb-3">
+            <label for="csvFile" class="field-label"><i class="bi bi-filetype-csv text-muted"></i> CSV file <span class="text-danger">*</span></label>
+            <input type="file" name="csv" id="csvFile" class="form-control" accept=".csv,text/csv" required>
           </div>
           <div class="form-check form-switch mb-3">
             <input class="form-check-input" type="checkbox" name="dry_run" id="dryRun" value="1" checked>
-            <label class="form-check-label" for="dryRun" style="font-size:13px;">
+            <label class="form-check-label" for="dryRun">
               <strong>Dry run</strong> — validate and preview only, don't save anything yet
             </label>
           </div>
-          <button type="submit" class="btn btn-primary-custom"><i class="bi bi-play-fill me-1"></i>Run import</button>
+          <button type="submit" class="btn btn-primary w-100"><i class="bi bi-play-fill"></i>Run import</button>
         </form>
       </div>
     </div>
@@ -417,25 +387,25 @@ require_once __DIR__ . '/includes/header.php';
     <div class="page-card">
       <div class="page-card-header">
         <h5>
-          <i class="bi bi-clipboard-check me-2"></i>
+          <i class="bi bi-clipboard-check"></i>
           <?= $summary['dry_run'] ? 'Dry run results — nothing was saved' : 'Import results' ?>
         </h5>
       </div>
-      <div class="p-3">
+      <div class="page-card-body">
         <p class="mb-3">
           <span class="sum-pill sum-imported"><?= $summary['imported'] ?> <?= $summary['dry_run'] ? 'ready to import' : 'imported' ?></span>
           <span class="sum-pill sum-skipped"><?= $summary['skipped'] ?> skipped</span>
           <span class="sum-pill sum-error"><?= $summary['error'] ?> errors</span>
         </p>
         <?php if ($summary['dry_run'] && $summary['imported'] > 0): ?>
-          <div class="alert alert-info py-2" style="font-size:13px;border-radius:8px;">Looks good? Untick <strong>Dry run</strong> and upload the same file again to import for real.</div>
+          <div class="alert alert-info py-2">Looks good? Untick <strong>Dry run</strong> and upload the same file again to import for real.</div>
         <?php endif; ?>
         <?php if (!$summary['dry_run'] && $createdLookups): ?>
-          <div class="alert alert-secondary py-2" style="font-size:12px;border-radius:8px;">
+          <div class="alert alert-info py-2 small">
             <strong>New lookup items created:</strong> <?= e(implode(' · ', array_unique($createdLookups))) ?>
           </div>
         <?php endif; ?>
-        <div class="table-responsive" style="max-height:480px;overflow-y:auto;background:#fff;border-radius:8px;border:1px solid #EEF2F7;">
+        <div class="table-responsive scroll-panel">
           <table class="table table-sm align-middle mb-0" id="resultsTable">
             <thead><tr><th>Row</th><th>Award</th><th>Status</th><th>Detail</th></tr></thead>
             <tbody>
@@ -444,7 +414,7 @@ require_once __DIR__ . '/includes/header.php';
                 <td><?= $r['row'] ?></td>
                 <td><?= e($r['name']) ?></td>
                 <td><span class="row-<?= e($r['status']) ?>"><?= e($r['status']) ?></span></td>
-                <td style="font-size:12px;color:#64748B;"><?= e($r['message']) ?></td>
+                <td class="cell-muted"><?= e($r['message']) ?></td>
               </tr>
               <?php endforeach; ?>
             </tbody>
@@ -454,14 +424,14 @@ require_once __DIR__ . '/includes/header.php';
     </div>
     <?php else: ?>
     <div class="page-card">
-      <div class="p-4 text-muted" style="font-size:13px;">
-        <i class="bi bi-info-circle me-1" style="color:var(--primary);"></i>
-        Upload a file to see the validation preview here. 
-        confirms each AAPNG ID matches a participant, and shows exactly what would happen.
+      <div class="empty-state">
+        <span class="empty-icon"><i class="bi bi-clipboard-data"></i></span>
+        <h3>No results yet</h3>
+        <p>Upload a file to see the validation preview here. confirms each AAPNG ID matches a participant, and shows exactly what would happen.</p>
       </div>
     </div>
     <?php endif; ?>
   </div>
 </div>
 
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>

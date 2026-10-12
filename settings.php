@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_admin();
-$page_title = '';
+$page_title = 'System settings';
 require_once __DIR__ . '/includes/header.php';
 
 $lookups = [
@@ -25,48 +25,15 @@ foreach (array_keys($lookups) as $t) {
 }
 ?>
 
-<style>
-  :root {
-    --primary:   #3CB6CE;
-    --secondary: #003150;
-  }
-  .page-title { font-size:22px; font-weight:800; color:var(--secondary); }
-  .page-sub   { font-size:13px; color:#64748B; margin-bottom:16px; max-width:720px; }
-
-  /* Lookup tiles */
-  .lookup-tile { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); padding:16px; display:flex; align-items:center; gap:14px; height:100%; transition:transform .15s ease, box-shadow .15s ease; }
-  .lookup-tile:hover { transform:translateY(-2px); box-shadow:0 4px 14px rgba(0,0,0,.10); }
-  .lookup-tile .tile-icon { width:44px; height:44px; border-radius:10px; background:#E0F5F9; color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
-  .lookup-tile .tile-info { flex:1 1 auto; min-width:0; }
-  .lookup-tile .tile-label { font-size:13px; font-weight:700; color:var(--secondary); }
-  .lookup-tile .tile-count { font-size:11px; color:#94A3B8; font-weight:500; }
-  .btn-manage { background:#EFF6FF; color:#1D4ED8; border:none; border-radius:6px; font-size:12px; font-weight:600; padding:5px 12px; white-space:nowrap; }
-  .btn-manage:hover { background:#DBEAFE; color:#1D4ED8; }
-
-  /* Modal */
-  .modal-header-brand { background:var(--secondary); color:#fff; }
-  .modal .form-control, .modal .form-select { border-radius:7px; border-color:#DDE5EC; font-size:13px; }
-  .modal .form-control:focus, .modal .form-select:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(60,182,206,.15); }
-  .btn-primary-custom { background:var(--primary); border-color:var(--primary); color:#fff; border-radius:7px; font-weight:600; font-size:13px; }
-  .btn-primary-custom:hover { background:#2A96AC; border-color:#2A96AC; color:#fff; }
-
-  /* Lookup table inside the modal */
-  #lookupTable thead th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#8A9DB0; font-weight:600; border-top:none; background:#FAFBFC; position:sticky; top:0; z-index:1; }
-  #lookupTable tbody td { font-size:13px; color:#334155; vertical-align:middle; }
-  #lookupTable tbody tr:hover { background:#F8FAFC; }
-
-  /* Status + action pills */
-  .lk-active   { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#DCFCE7; color:#15803D; }
-  .lk-inactive { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#F1F5F9; color:#64748B; }
-  .btn-edit-r { background:#FFF7ED; color:#C2410C; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-power  { background:#F1F5F9; color:#475569; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-del    { background:#FEF2F2; color:#DC2626; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-</style>
-
-<div class="page-title">System settings</div>
-<div class="page-sub">These lists power the dropdowns staff see when entering records.
-Items in use by existing records can't be deleted — deactivate them instead and they
-disappear from dropdowns while remaining on old records.</div>
+<div class="page-header">
+  <div>
+    <span class="page-eyebrow">Administration</span>
+    <h1 class="page-title">System settings</h1>
+    <p class="page-sub">These lists power the dropdowns staff see when entering records.
+      Items already used by records can't be deleted — deactivate them instead and they
+      disappear from dropdowns while staying on old records.</p>
+  </div>
+</div>
 
 <div class="row g-3">
   <?php foreach ($lookups as $key => $l): ?>
@@ -78,7 +45,7 @@ disappear from dropdowns while remaining on old records.</div>
         <div class="tile-count"><?= number_format($counts[$key]) ?> item<?= $counts[$key] === 1 ? '' : 's' ?></div>
       </div>
       <button class="btn btn-manage" onclick="openLookup('<?= $key ?>', '<?= e($l['label']) ?>')">
-        <i class="bi bi-sliders me-1"></i>Manage
+        <i class="bi bi-pencil-square"></i>Manage
       </button>
     </div>
   </div>
@@ -88,12 +55,12 @@ disappear from dropdowns while remaining on old records.</div>
 <!-- ============ Lookup manager popup ============ -->
 <div class="modal fade" id="lookupModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content" style="border-radius:12px;overflow:hidden;">
+    <div class="modal-content">
       <div class="modal-header modal-header-brand">
         <h5 class="modal-title" id="lookupModalTitle"><i class="bi bi-sliders me-2"></i>Manage</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" style="background:#FAFBFC;">
+      <div class="modal-body">
         <form id="lookupForm" class="row g-2 mb-3">
           <input type="hidden" id="lookupItemId">
           <div class="col-md-4 d-none" id="lookupProvinceWrap">
@@ -103,19 +70,19 @@ disappear from dropdowns while remaining on old records.</div>
             <input type="text" class="form-control" id="lookupName" placeholder="New item name…" required>
           </div>
           <div class="col-auto">
-            <button type="submit" class="btn btn-primary-custom" id="lookupSaveBtn"><i class="bi bi-plus-lg me-1"></i>Add</button>
-            <button type="button" class="btn btn-light d-none" id="lookupCancelBtn" style="border-radius:7px;">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="lookupSaveBtn"><i class="bi bi-plus-lg"></i>Add</button>
+            <button type="button" class="btn btn-light d-none" id="lookupCancelBtn">Cancel</button>
           </div>
         </form>
-        <div class="table-responsive" style="max-height:420px;overflow-y:auto;background:#fff;border-radius:8px;border:1px solid #EEF2F7;">
+        <div class="table-responsive scroll-panel">
           <table class="table table-sm align-middle mb-0" id="lookupTable">
             <thead><tr id="lookupHeadRow"></tr></thead>
             <tbody id="lookupTableBody"></tbody>
           </table>
         </div>
       </div>
-      <div class="modal-footer" style="background:#F8FAFC;border-top:1px solid #EEF2F7;">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius:7px;">Close</button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -223,4 +190,4 @@ async function deleteLookupItem(id) {
 }
 </script>
 
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>

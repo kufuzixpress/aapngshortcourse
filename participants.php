@@ -1,94 +1,42 @@
 <?php
-$page_title = '';
+$page_title = 'Participants';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<style>
-  :root {
-    --primary:   #3CB6CE;
-    --secondary: #003150;
-  }
-  .page-title { font-size:22px; font-weight:800; color:var(--secondary); }
-  .page-sub   { font-size:13px; color:#64748B; margin-bottom:16px; }
-
-  /* Filter bar */
-  .filter-bar { background:#fff; border-radius:10px; padding:10px 16px; margin-bottom:16px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
-  .filter-bar label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#64748B; margin-bottom:3px; display:block; }
-  .filter-bar .form-control, .filter-bar .form-select { border-radius:6px; font-size:12px; border-color:#DDE5EC; }
-  .btn-clear-filter { background:#F1F5F9; color:#475569; border-radius:7px; font-size:13px; }
-
-  /* Page card */
-  .page-card { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
-  .page-card-header { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid #EEF2F7; }
-  .page-card-header h5 { margin:0; font-size:15px; font-weight:700; color:var(--secondary); }
-  .btn-primary-custom { background:var(--primary); border-color:var(--primary); color:#fff; border-radius:7px; font-weight:600; font-size:13px; }
-  .btn-primary-custom:hover { background:#2A96AC; border-color:#2A96AC; color:#fff; }
-
-  /* Table */
-  #participants-table thead th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#8A9DB0; font-weight:600; border-top:none; background:#FAFBFC; }
-  #participants-table tbody td { font-size:13px; color:#334155; vertical-align:middle; }
-  #participants-table tbody tr:hover { background:#F8FAFC; }
-
-  /* Action pills */
-  .btn-view   { background:#EFF6FF; color:#1D4ED8; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-edit-r { background:#FFF7ED; color:#C2410C; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-del    { background:#FEF2F2; color:#DC2626; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-
-  /* Chips / badges */
-  .id-chip { background:#EEF2F7; color:var(--secondary); padding:2px 8px; border-radius:5px; font-size:11px; font-weight:700; }
-  .gender-badge { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#F1F5F9; color:#475569; }
-  .gender-Female { background:#FCE7F3; color:#9D174D; }
-  .gender-Male   { background:#DBEAFE; color:#1D4ED8; }
-
-  /* Modal */
-  .field-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#64748B; display:block; margin-bottom:6px; }
-  .modal .form-control, .modal .form-select { border-radius:7px; border-color:#DDE5EC; font-size:13px; }
-  .modal .form-control:focus, .modal .form-select:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(60,182,206,.15); }
-  .modal-header-brand { background:var(--secondary); color:#fff; }
-  .section-divider { border:none; border-top:1px solid #EEF2F7; margin:18px 0 16px; }
-  .section-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#94A3B8; margin-bottom:12px; display:block; }
-  .btn-save-brand { background:var(--secondary); color:#fff; border-radius:7px; font-weight:600; min-width:140px; }
-  .btn-save-brand:hover { background:#00263d; color:#fff; }
-</style>
-
-<div class="page-title">Participants</div>
-<div class="page-sub">View, add, edit and manage all participant records</div>
-
-<!-- Filter Bar — single compact row -->
-<div class="filter-bar">
-  <div class="row g-2 align-items-end">
-    <div class="col-md-5">
-      <label>Search</label>
-      <div class="input-group input-group-sm">
-        <span class="input-group-text" style="border-color:#DDE5EC;background:#FAFBFC;"><i class="bi bi-search"></i></span>
-        <input type="text" class="form-control" id="tableSearch" placeholder="Search by name, ID, district…">
-      </div>
-    </div>
-    <div class="col-md-3">
-      <label>Province</label>
-      <select class="form-select form-select-sm" id="provinceFilter">
-        <option value="">All Provinces</option>
-      </select>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-sm btn-clear-filter" id="clearFilters" title="Clear filters">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
+<div class="page-header">
+  <div>
+    <span class="page-eyebrow">Records</span>
+    <h1 class="page-title">Participants</h1>
+    <p class="page-sub">Search, add and update the people who have taken part in short courses.</p>
+  </div>
+  <div class="page-actions">
+    <button type="button" class="btn btn-primary" onclick="openParticipantForm()">
+      <i class="bi bi-person-plus"></i>Add new person
+    </button>
   </div>
 </div>
 
-<!-- Table -->
 <div class="page-card">
   <div class="page-card-header">
-    <h5><i class="bi bi-people me-2" style="color:var(--primary)"></i>Participants</h5>
-    <button class="btn btn-primary-custom" onclick="openParticipantForm()">
-      <i class="bi bi-person-plus me-1"></i> Add New
-    </button>
+    <div class="table-toolbar">
+      <div class="search-field">
+        <i class="bi bi-search"></i>
+        <label class="visually-hidden" for="tableSearch">Search</label>
+        <input type="search" class="form-control" id="tableSearch" placeholder="Search by name, ID or district…">
+      </div>
+      <div class="toolbar-filter">
+        <label class="visually-hidden" for="provinceFilter">Province</label>
+        <select class="form-select" id="provinceFilter">
+          <option value="">All provinces</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-light" id="clearFilters" title="Clear search and filters">
+        <i class="bi bi-arrow-counterclockwise"></i><span class="d-none d-sm-inline">Reset</span>
+      </button>
+    </div>
   </div>
-  <div class="p-3">
-    <div class="table-responsive">
-      <table id="participants-table" class="table table-hover w-100 mb-0">
+  <div class="table-responsive">
+      <table id="participants-table" class="table table-hover table-flush w-100 mb-0">
         <thead>
           <tr>
             <th>AAPNG ID</th><th>Family name</th><th>Given names</th><th>Gender</th>
@@ -96,20 +44,19 @@ require_once __DIR__ . '/includes/header.php';
           </tr>
         </thead>
       </table>
-    </div>
   </div>
 </div>
 
 <!-- ============ Add / Edit popup ============ -->
 <div class="modal fade" id="participantModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content" style="border-radius:12px;overflow:hidden;">
+    <div class="modal-content">
       <form id="participantForm" novalidate>
         <div class="modal-header modal-header-brand">
           <h5 class="modal-title" id="participantModalTitle"><i class="bi bi-person-plus me-2"></i>Add new person</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="background:#FAFBFC;">
+        <div class="modal-body">
           <input type="hidden" name="id">
 
           <div id="dupWarning" class="alert alert-warning d-none">
@@ -150,7 +97,7 @@ require_once __DIR__ . '/includes/header.php';
               <label class="field-label d-block">Disability</label>
               <div class="form-check form-switch mt-2">
                 <input class="form-check-input" type="checkbox" name="disability_flag" id="disabilityFlag">
-                <label class="form-check-label" for="disabilityFlag" style="font-size:13px;">Person has a disability</label>
+                <label class="form-check-label" for="disabilityFlag">Person has a disability</label>
               </div>
             </div>
             <div class="col-md-6">
@@ -203,9 +150,9 @@ require_once __DIR__ . '/includes/header.php';
             </div>
           </div>
         </div>
-        <div class="modal-footer" style="background:#F8FAFC;border-top:1px solid #EEF2F7;">
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-save-brand"><i class="bi bi-check-lg me-1"></i>Save person</button>
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius:7px;">Cancel</button>
         </div>
       </form>
     </div>
@@ -215,18 +162,18 @@ require_once __DIR__ . '/includes/header.php';
 <!-- ============ View popup ============ -->
 <div class="modal fade" id="viewModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content" style="border-radius:12px;overflow:hidden;">
+    <div class="modal-content">
       <div class="modal-header modal-header-brand">
         <h5 class="modal-title"><i class="bi bi-person-badge me-2"></i>Person details</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="viewBody" style="background:#FAFBFC;"></div>
-      <div class="modal-footer" style="background:#F8FAFC;border-top:1px solid #EEF2F7;">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius:7px;">Close</button>
-        <button type="button" class="btn btn-outline-brand" id="viewAddAwardBtn" style="border-radius:7px;">
+      <div class="modal-body" id="viewBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline-brand" id="viewAddAwardBtn">
           <i class="bi bi-award me-1"></i>Record new award
         </button>
-        <button type="button" class="btn btn-save-brand" id="viewEditBtn" style="min-width:auto;">
+        <button type="button" class="btn btn-save-brand" id="viewEditBtn">
           <i class="bi bi-pencil me-1"></i>Edit
         </button>
       </div>
@@ -286,12 +233,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       { data: 'given_names' },
       { data: 'gender', render: v => v
           ? `<span class="gender-badge gender-${esc(v)}">${esc(v)}</span>`
-          : '<span style="font-size:11px;color:#CBD5E1;">—</span>' },
+          : '<span class="empty-dash">—</span>' },
       { data: 'date_of_birth' },
       { data: 'province' },
       { data: 'district' },
       { data: null, orderable: false, className: 'text-nowrap', render: row => `
-          <div style="display:flex;gap:4px;">
+          <div class="row-actions">
             <a href="${APP_URL}/participant_view.php?id=${row.id}" class="btn btn-view"><i class="bi bi-eye"></i> View</a>
             <button class="btn btn-edit-r" onclick="openParticipantForm(${row.id})"><i class="bi bi-pencil"></i> Edit</button>
             ${IS_ADMIN ? `<button class="btn btn-del" onclick="deleteParticipant(${row.id})"><i class="bi bi-trash"></i> Del</button>` : ''}
@@ -386,29 +333,27 @@ async function viewParticipant(id) {
   const awardRows = (p.awards || []).map(a => `
     <tr><td>${esc(a.scholarship_code)}</td><td>${esc(a.intake_year)}</td>
         <td>${esc(a.main_course_name)}</td><td>${esc(a.institution)}</td>
-        <td>${esc(a.study_level)}</td><td><span class="badge bg-secondary">${esc(a.status)}</span></td></tr>`).join('');
+        <td>${esc(a.study_level)}</td><td><span class="st-badge st-${esc((a.status || '').replace(/ /g, '-'))}">${esc(a.status) || '—'}</span></td></tr>`).join('');
 
   document.getElementById('viewBody').innerHTML = `
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <h5 class="mb-1" style="color:var(--secondary);font-weight:800;">${esc(p.family_name)}, ${esc(p.given_names)}</h5>
-        <span class="id-chip">${esc(p.aapng_id)}</span>
-      </div>
+    <div class="mb-4">
+      <h3 class="view-title">${esc(p.family_name)}, ${esc(p.given_names)}</h3>
+      <span class="id-chip">${esc(p.aapng_id)}</span>
     </div>
-    <dl class="row" style="font-size:13px;">
-      <dt class="col-sm-4 field-label">Gender</dt><dd class="col-sm-8">${esc(p.gender)}</dd>
-      <dt class="col-sm-4 field-label">Date of birth</dt><dd class="col-sm-8">${esc(p.date_of_birth)}</dd>
-      <dt class="col-sm-4 field-label">Disability</dt><dd class="col-sm-8">${Number(p.disability_flag) ? 'Yes' : 'No'}</dd>
-      <dt class="col-sm-4 field-label">Home phone</dt><dd class="col-sm-8">${esc(p.home_phone) || '—'}</dd>
-      <dt class="col-sm-4 field-label">Work phone</dt><dd class="col-sm-8">${esc(p.work_phone) || '—'}</dd>
-      <dt class="col-sm-4 field-label">Email</dt><dd class="col-sm-8">${esc(p.email) || '—'}</dd>
+    <dl class="detail-list">
+      <dt>Gender</dt><dd>${esc(p.gender)}</dd>
+      <dt>Date of birth</dt><dd>${esc(p.date_of_birth)}</dd>
+      <dt>Disability</dt><dd>${Number(p.disability_flag) ? 'Yes' : 'No'}</dd>
+      <dt>Home phone</dt><dd>${esc(p.home_phone) || '—'}</dd>
+      <dt>Work phone</dt><dd>${esc(p.work_phone) || '—'}</dd>
+      <dt>Email</dt><dd>${esc(p.email) || '—'}</dd>
     </dl>
     <hr class="section-divider">
-    <span class="section-label"><i class="bi bi-award me-1"></i> Awards (${(p.awards || []).length})</span>
+    <span class="section-label"><i class="bi bi-award"></i> Awards (${(p.awards || []).length})</span>
     <div class="table-responsive">
       <table class="table table-sm table-hover" id="viewAwardsTable">
         <thead><tr><th>Code</th><th>Intake</th><th>Course</th><th>Institution</th><th>Level</th><th>Status</th></tr></thead>
-        <tbody>${awardRows || '<tr><td colspan="6" class="text-muted">No awards recorded yet.</td></tr>'}</tbody>
+        <tbody>${awardRows || '<tr><td colspan="6" class="text-muted text-center py-4">No awards recorded yet.</td></tr>'}</tbody>
       </table>
     </div>`;
   viewModal.show();
@@ -431,4 +376,4 @@ async function deleteParticipant(id) {
 }
 </script>
 
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>
