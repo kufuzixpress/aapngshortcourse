@@ -1,5 +1,5 @@
 <?php
-$page_title = '';
+$page_title = 'Dashboard';
 require_once __DIR__ . '/includes/header.php';
 
 // ---------------------------------------------------------------
@@ -142,111 +142,48 @@ function render_breakdown_table(string $id, array $rows, string $firstColLabel, 
 }
 ?>
 
-<style>
-  :root {
-    --primary:   #3CB6CE;
-    --secondary: #003150;
-  }
-  .page-title { font-size:22px; font-weight:800; color:var(--secondary); }
-  .page-sub   { font-size:13px; color:#64748B; margin-bottom:16px; }
-
-  /* Page card */
-  .page-card { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); border:none; }
-  .page-card-header { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid #EEF2F7; }
-  .page-card-header h5 { margin:0; font-size:13px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:.05em; }
-  .page-card-header h5 i { color:var(--primary); }
-
-  /* KPI cards */
-  .kpi-card { border-radius:10px; padding:18px; color:#fff; position:relative; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,.08); display:block; text-decoration:none; transition:transform .15s ease, box-shadow .15s ease; }
-  .kpi-card:hover { transform:translateY(-2px); box-shadow:0 4px 14px rgba(0,0,0,.14); color:#fff; }
-  .kpi-card .kpi-value { font-size:26px; font-weight:800; line-height:1.1; }
-  .kpi-card .kpi-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; opacity:.85; margin-top:2px; }
-  .kpi-card .kpi-icon  { position:absolute; right:14px; top:14px; font-size:34px; opacity:.25; }
-  .kpi-card .kpi-link  { display:inline-flex; align-items:center; gap:4px; margin-top:12px; font-size:11px; font-weight:600; color:rgba(255,255,255,.85); }
-  .kpi-navy  { background:linear-gradient(135deg, #003150 0%, #00263d 100%); }
-  .kpi-teal  { background:linear-gradient(135deg, #3CB6CE 0%, #2a9ab0 100%); }
-  .kpi-green { background:linear-gradient(135deg, #16A34A 0%, #15803D 100%); }
-
-  /* Secondary stat strip */
-  .stat-card { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; height:100%; }
-  .stat-card .stat-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:#64748B; }
-  .stat-card .stat-value { font-size:19px; font-weight:800; color:var(--secondary); }
-  .stat-card .stat-value small { font-size:12px; font-weight:500; color:#94A3B8; }
-  .stat-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
-
-  /* Breakdown tables (province / institution / course) */
-  .breakdown-scroll { max-height: 340px; overflow-y: auto; }
-  .breakdown-table thead th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#8A9DB0; font-weight:600; border-top:none; background:#FAFBFC; position:sticky; top:0; z-index:1; }
-  .breakdown-table tbody td { font-size:13px; color:#334155; vertical-align:middle; }
-  .breakdown-table tbody tr:hover { background:#F8FAFC; }
-  .breakdown-table tfoot td { font-size:12px; font-weight:700; color:var(--secondary); background:#FAFBFC; border-top:2px solid #EEF2F7; }
-  .count-pill { display:inline-block; min-width:34px; text-align:center; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700; }
-  .pill-female  { background:#FCE7F3; color:#9D174D; }
-  .pill-male    { background:#DBEAFE; color:#1D4ED8; }
-  .pill-dis     { background:#DCFCE7; color:#15803D; }
-  .pill-total   { background:#EEF2F7; color:var(--secondary); }
-
-  /* Info banner */
-  .info-banner {
-    background: linear-gradient(135deg, #FFEDD5 0%, #FFE4C4 100%);
-    border: 1px solid #FDBA74;
-    border-left: 5px solid #F59E0B;
-    border-radius: 10px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #7C2D12;
-    box-shadow: 0 2px 10px rgba(245,158,11,0.18);
-  }
-  .info-banner-icon-wrap {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: #F59E0B;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(245,158,11,0.4);
-  }
-  .info-banner-icon { color: #fff; font-size: 17px; }
-  .info-banner strong { color: #9A3412; font-weight: 800; }
-</style>
-
-<div class="page-title">Dashboard</div>
-<div class="page-sub">Overview of participants, awards and expenditure</div>
+<div class="page-header">
+  <div>
+    <span class="page-eyebrow">Overview</span>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-sub">Participants, awards and expenditure across every intake at a glance.</p>
+  </div>
+  <div class="page-actions">
+    <a href="participants.php" class="btn btn-outline-brand"><i class="bi bi-people"></i>Participants</a>
+    <a href="awards.php" class="btn btn-primary"><i class="bi bi-award"></i>Awards</a>
+  </div>
+</div>
 
 <!-- ============ Info banner ============ -->
 <div class="info-banner mb-3">
-  <div class="info-banner-icon-wrap">
-    <i class="bi bi-exclamation-triangle-fill info-banner-icon"></i>
-  </div>
+  <div class="info-banner-icon-wrap"><i class="bi bi-info-circle-fill"></i></div>
   <span>The number of <strong>participants</strong> will usually be less than the number of <strong>awards</strong> — the same person can attend more than one short course.</span>
 </div>
 
 <!-- ============ KPI cards ============ -->
 <div class="row g-3 mb-3">
-  <div class="col-lg-4 col-6">
+  <div class="col-md-4">
     <a href="participants.php" class="kpi-card kpi-navy">
       <div class="kpi-value"><?= number_format($kpi['participants']) ?></div>
       <div class="kpi-label">Participants</div>
       <i class="kpi-icon bi bi-people"></i>
-      <span class="kpi-link">View records <i class="bi bi-arrow-right-circle"></i></span>
+      <span class="kpi-link">View records <i class="bi bi-arrow-right"></i></span>
     </a>
   </div>
-  <div class="col-lg-4 col-6">
+  <div class="col-md-4">
     <a href="awards.php" class="kpi-card kpi-teal">
       <div class="kpi-value"><?= number_format($kpi['awards']) ?></div>
       <div class="kpi-label">Awards</div>
       <i class="kpi-icon bi bi-award"></i>
-      <span class="kpi-link">View records <i class="bi bi-arrow-right-circle"></i></span>
+      <span class="kpi-link">View records <i class="bi bi-arrow-right"></i></span>
     </a>
   </div>
-  <div class="col-lg-4 col-6">
-    <a href="awards.php" class="kpi-card kpi-green">
+  <div class="col-md-4">
+    <a href="awards.php" class="kpi-card kpi-slate">
       <div class="kpi-value"><?= fmt_aud($kpi['total_cost']) ?></div>
       <div class="kpi-label">Total expenditure (AUD)</div>
       <i class="kpi-icon bi bi-cash-stack"></i>
-      <span class="kpi-link">View awards <i class="bi bi-arrow-right-circle"></i></span>
+      <span class="kpi-link">View awards <i class="bi bi-arrow-right"></i></span>
     </a>
   </div>
 </div>
@@ -259,7 +196,7 @@ function render_breakdown_table(string $id, array $rows, string $firstColLabel, 
         <span class="stat-label">Female participants</span>
         <div class="stat-value"><?= number_format($femaleN) ?> <small>(<?= $femalePct ?>%)</small></div>
       </div>
-      <div class="stat-icon" style="background:#E0F5F9;color:#3CB6CE;"><i class="bi bi-gender-female"></i></div>
+      <div class="stat-icon stat-icon-teal"><i class="bi bi-gender-female"></i></div>
     </div>
   </div>
   <div class="col-md-4">
@@ -268,7 +205,7 @@ function render_breakdown_table(string $id, array $rows, string $firstColLabel, 
         <span class="stat-label">Male participants</span>
         <div class="stat-value"><?= number_format($maleN) ?> <small>(<?= 100 - $femalePct ?>%)</small></div>
       </div>
-      <div class="stat-icon" style="background:#E7EDF2;color:#003150;"><i class="bi bi-gender-male"></i></div>
+      <div class="stat-icon stat-icon-navy"><i class="bi bi-gender-male"></i></div>
     </div>
   </div>
   <div class="col-md-4">
@@ -277,7 +214,7 @@ function render_breakdown_table(string $id, array $rows, string $firstColLabel, 
         <span class="stat-label">Participants with disability</span>
         <div class="stat-value"><?= number_format($kpi['disability']) ?></div>
       </div>
-      <div class="stat-icon" style="background:#DCFCE7;color:#15803D;"><i class="bi bi-universal-access"></i></div>
+      <div class="stat-icon stat-icon-slate"><i class="bi bi-universal-access"></i></div>
     </div>
   </div>
 </div>
@@ -287,13 +224,13 @@ function render_breakdown_table(string $id, array $rows, string $firstColLabel, 
   <div class="col-lg-8">
     <div class="page-card h-100">
       <div class="page-card-header"><h5><i class="bi bi-bar-chart me-2"></i>Awards &amp; expenditure by intake year</h5></div>
-      <div class="p-3"><canvas id="chartYear" height="110"></canvas></div>
+      <div class="chart-box"><canvas id="chartYear" height="110"></canvas></div>
     </div>
   </div>
   <div class="col-lg-4">
     <div class="page-card h-100">
       <div class="page-card-header"><h5><i class="bi bi-flag me-2"></i>Scholarship status</h5></div>
-      <div class="p-3 d-flex align-items-center justify-content-center"><canvas id="chartStatus" style="max-height:260px"></canvas></div>
+      <div class="chart-box d-flex align-items-center justify-content-center"><canvas id="chartStatus" style="max-height:260px"></canvas></div>
     </div>
   </div>
 </div>
@@ -303,7 +240,7 @@ function render_breakdown_table(string $id, array $rows, string $firstColLabel, 
   <div class="col-lg-3">
     <div class="page-card h-100">
       <div class="page-card-header"><h5><i class="bi bi-people me-2"></i>Gender breakdown</h5></div>
-      <div class="p-3 d-flex align-items-center justify-content-center"><canvas id="chartGender" style="max-height:240px"></canvas></div>
+      <div class="chart-box d-flex align-items-center justify-content-center"><canvas id="chartGender" style="max-height:240px"></canvas></div>
     </div>
   </div>
   <div class="col-lg-9">
@@ -338,12 +275,19 @@ function render_breakdown_table(string $id, array $rows, string $firstColLabel, 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
+// Brand palette: navy and teal lead, then tints and the neutral greys.
 const NAVY = '#003150', CYAN = '#3CB6CE';
-const PALETTE = ['#003150', '#3CB6CE', '#16A34A', '#F59E0B', '#DC2626', '#64748B', '#6D28D9', '#FD7E14'];
+const PALETTE = ['#003150', '#3CB6CE', '#747678', '#8FD3E1', '#4D7590', '#C9CAC5', '#1A6F80', '#B9CBD6'];
 
-Chart.defaults.color = '#64748B';
-Chart.defaults.borderColor = '#EEF2F7';
-Chart.defaults.font.size = 11;
+Chart.defaults.color = '#747678';
+Chart.defaults.borderColor = '#E0E1DD';
+Chart.defaults.font.family = 'Arial, "Helvetica Neue", Helvetica, sans-serif';
+Chart.defaults.font.size = 12;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.boxWidth = 8;
+Chart.defaults.plugins.tooltip.backgroundColor = NAVY;
+Chart.defaults.plugins.tooltip.padding = 10;
+Chart.defaults.plugins.tooltip.cornerRadius = 6;
 
 // ---- Awards & expenditure by intake year (bar + line, dual axis) ----
 const byYear = <?= json_encode($byYear) ?>;
@@ -394,4 +338,4 @@ new Chart(document.getElementById('chartGender'), {
 });
 </script>
 
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>

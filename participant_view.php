@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Participant details';
+$page_title = 'Person profile';
 require_once __DIR__ . '/includes/header.php';
 
 $id = (int)($_GET['id'] ?? 0);
@@ -9,157 +9,16 @@ if (!$id) {
 }
 ?>
 
-<style>
-  :root { --primary:#3CB6CE; --secondary:#003150; }
-
-  /* ── Hero banner ─────────────────────────────────── */
-  .hero {
-    background: linear-gradient(135deg, var(--secondary) 0%, #00466e 100%);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::after {
-    content: '';
-    position: absolute;
-    right: -30px; top: -30px;
-    width: 180px; height: 180px;
-    border-radius: 50%;
-    background: rgba(60,182,206,.08);
-    pointer-events: none;
-  }
-  .hero-avatar {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: rgba(60,182,206,.25);
-    border: 2px solid rgba(60,182,206,.5);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; font-weight: 800; color: #fff;
-    flex-shrink: 0;
-  }
-  .hero-name {
-    font-size: 18px; font-weight: 800; color: #fff; line-height: 1.2;
-  }
-  .hero-id {
-    background: rgba(60,182,206,.2);
-    border: 1px solid rgba(60,182,206,.4);
-    color: var(--primary);
-    padding: 2px 10px; border-radius: 5px;
-    font-size: 11px; font-weight: 700;
-    display: inline-block; margin-top: 4px;
-  }
-  .hero-meta {
-    display: flex; flex-wrap: wrap; gap: 16px;
-    margin-top: 10px;
-  }
-  .hero-meta-item {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; color: rgba(255,255,255,.7);
-  }
-  .hero-meta-item i { color: var(--primary); font-size: 12px; }
-  .hero-meta-item strong { color: #fff; }
-  .hero-actions { margin-left: auto; display: flex; gap: 8px; flex-shrink: 0; }
-  .btn-hero-edit {
-    background: var(--primary); border: none; color: #fff;
-    border-radius: 7px; font-size: 12px; font-weight: 600;
-    padding: 7px 14px; cursor: pointer;
-    transition: background .15s;
-  }
-  .btn-hero-edit:hover { background: #2a9ab0; color:#fff; }
-  .btn-hero-del {
-    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
-    color: rgba(255,255,255,.7); border-radius: 7px;
-    font-size: 12px; font-weight: 600; padding: 7px 14px; cursor: pointer;
-    transition: background .15s;
-  }
-  .btn-hero-del:hover { background: rgba(220,38,38,.3); color:#fff; border-color:rgba(220,38,38,.5); }
-
-  /* ── Info strip below hero ───────────────────────── */
-  .info-strip {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 10px; margin-bottom: 16px;
-  }
-  .info-card {
-    background: #fff; border-radius: 10px;
-    box-shadow: 0 1px 6px rgba(0,0,0,.05);
-    padding: 12px 16px;
-  }
-  .info-card .info-label {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .08em; color: #94A3B8; margin-bottom: 4px;
-  }
-  .info-card .info-val {
-    font-size: 13px; font-weight: 600; color: var(--secondary);
-  }
-  .info-card .info-val.empty { color: #CBD5E1; font-weight: 400; font-style: italic; }
-
-  /* ── Page card (awards) ──────────────────────────── */
-  .page-card { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
-  .page-card-header { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid #EEF2F7; }
-  .page-card-header h5 { margin:0; font-size:13px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:.05em; }
-  .page-card-header h5 i { color:var(--primary); }
-
-  /* ── Awards table ────────────────────────────────── */
-  #awardsTable thead th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#8A9DB0; font-weight:600; border-top:none; background:#FAFBFC; }
-  #awardsTable tbody td { font-size:13px; color:#334155; vertical-align:middle; }
-  #awardsTable tbody tr:hover { background:#F8FAFC; }
-  .code-chip { background:#EEF2F7; color:var(--secondary); padding:2px 8px; border-radius:5px; font-size:11px; font-weight:700; }
-  .st-badge     { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#F1F5F9; color:#475569; white-space:nowrap; }
-  .st-Active     { background:#DCFCE7; color:#15803D; }
-  .st-Completed  { background:#EDE9FE; color:#6D28D9; }
-  .st-Ongoing    { background:#DBEAFE; color:#1D4ED8; }
-  .st-In-Progress { background:#DBEAFE; color:#1D4ED8; }
-  .st-On-Hold    { background:#FEF3C7; color:#92400E; }
-  .st-Withdrawn  { background:#FEE2E2; color:#991B1B; }
-  .st-Terminated { background:#FEE2E2; color:#991B1B; }
-  .sc-badge { padding:3px 8px; border-radius:20px; font-size:11px; font-weight:600; }
-  .sc-SCA   { background:#E0F5F9; color:#0E7490; }
-  .sc-HEP   { background:#EDE9FE; color:#6D28D9; }
-  .sc-Other { background:#F1F5F9; color:#475569; }
-
-  /* ── Action pills ────────────────────────────────── */
-  .btn-view   { background:#EFF6FF; color:#1D4ED8; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-edit-r { background:#FFF7ED; color:#C2410C; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-primary-custom { background:var(--primary); border-color:var(--primary); color:#fff; border-radius:7px; font-weight:600; font-size:12px; }
-  .btn-primary-custom:hover { background:#2A96AC; color:#fff; }
-
-  /* ── Gender badge ───────────────────────────────── */
-  .gender-Female { background:#FCE7F3; color:#9D174D; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; }
-  .gender-Male   { background:#DBEAFE; color:#1D4ED8; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; }
-
-  /* ── Edit modal ─────────────────────────────────── */
-  .field-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#64748B; display:block; margin-bottom:6px; }
-  .modal .form-control, .modal .form-select { border-radius:7px; border-color:#DDE5EC; font-size:13px; }
-  .modal .form-control:focus, .modal .form-select:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(60,182,206,.15); }
-  .section-divider { border:none; border-top:1px solid #EEF2F7; margin:18px 0 16px; }
-  .section-label-sm { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#94A3B8; margin-bottom:12px; display:block; }
-  .btn-save-brand { background:var(--secondary); color:#fff; border-radius:7px; font-weight:600; min-width:120px; }
-  .btn-save-brand:hover { background:#00263d; color:#fff; }
-
-  @media (max-width:768px) {
-    .info-strip { grid-template-columns:1fr 1fr; }
-    .hero { flex-wrap:wrap; }
-    .hero-actions { margin-left:0; width:100%; }
-  }
-  @media (max-width:480px) {
-    .info-strip { grid-template-columns:1fr; }
-  }
-</style>
-
 <!-- Back link -->
 <div class="mb-3">
-  <a href="participants.php" class="btn btn-sm" style="background:#F1F5F9;color:#475569;border-radius:7px;font-size:13px;font-weight:600;">
+  <a href="participants.php" class="btn btn-light btn-sm">
     <i class="bi bi-arrow-left me-1"></i>Back to participants
   </a>
 </div>
 
 <!-- Loading state -->
-<div id="loadingState" class="text-center py-5 text-muted" style="font-size:13px;">
-  <div class="spinner-border spinner-border-sm me-2" style="color:var(--primary)"></div>
+<div id="loadingState" class="text-center py-5 text-muted">
+  <div class="spinner-border spinner-border-sm me-2"></div>
   Loading participant…
 </div>
 
@@ -169,7 +28,7 @@ if (!$id) {
   <!-- ── Hero banner ── -->
   <div class="hero" id="heroBanner">
     <div class="hero-avatar" id="heroAvatar"></div>
-    <div style="flex:1;min-width:0;">
+    <div class="hero-body">
       <div class="hero-name" id="heroName"></div>
       <div id="heroId"></div>
       <div class="hero-meta" id="heroMeta"></div>
@@ -183,14 +42,13 @@ if (!$id) {
   <!-- ── Awards table ── -->
   <div class="page-card">
     <div class="page-card-header">
-      <h5><i class="bi bi-award me-2"></i>Awards (<span id="awardsCount">0</span>)</h5>
-      <a href="#" class="btn btn-primary-custom btn-sm" id="addAwardBtn">
-        <i class="bi bi-plus-lg me-1"></i>Record new award
+      <h5><i class="bi bi-award"></i>Awards <span class="count-badge" id="awardsCount">0</span></h5>
+      <a href="#" class="btn btn-primary btn-sm" id="addAwardBtn">
+        <i class="bi bi-plus-lg"></i>Record new award
       </a>
     </div>
-    <div class="p-3">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0" id="awardsTable">
+    <div class="table-responsive">
+        <table class="table table-hover table-flush mb-0" id="awardsTable">
           <thead>
             <tr>
               <th>Code</th><th>Intake</th><th>Scheme</th><th>Course</th>
@@ -200,7 +58,6 @@ if (!$id) {
           </thead>
           <tbody id="awardsBody"></tbody>
         </table>
-      </div>
     </div>
   </div>
 
@@ -209,13 +66,13 @@ if (!$id) {
 <!-- ============ Award edit popup ============ -->
 <div class="modal fade" id="awardModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content" style="border-radius:12px;overflow:hidden;">
+    <div class="modal-content">
       <form id="awardForm" novalidate>
-        <div class="modal-header" style="background:var(--secondary);color:#fff;">
+        <div class="modal-header">
           <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Edit award</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="background:#FAFBFC;">
+        <div class="modal-body">
           <input type="hidden" name="id">
           <input type="hidden" name="participant_id" value="<?= $id ?>">
 
@@ -242,12 +99,12 @@ if (!$id) {
               <select class="form-select" name="field_of_study_id" id="awardField" required></select>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Study start date</label>
-              <input type="date" class="form-control" name="study_start_date">
+              <label class="field-label">Study start date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="study_start_date" required>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Study end date</label>
-              <input type="date" class="form-control" name="study_end_date">
+              <label class="field-label">Study end date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="study_end_date" required>
             </div>
           </div>
 
@@ -270,16 +127,17 @@ if (!$id) {
             <div class="col-md-6 d-none" id="awardCostWrap">
               <label class="field-label">Scholarship cost (AUD) <span class="text-danger">*</span></label>
               <div class="input-group">
-                <span class="input-group-text" style="border-color:#DDE5EC;background:#FAFBFC;">A$</span>
+                <span class="input-group-text">A$</span>
                 <input type="number" step="0.01" min="0" class="form-control" name="scholarship_cost" id="awardCost">
               </div>
               <div class="form-text">Required when the scholarship is completed.</div>
             </div>
           </div>
         </div>
-        <div class="modal-footer" style="background:#F8FAFC;border-top:1px solid #EEF2F7;">
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-save-brand"><i class="bi bi-check-lg me-1"></i>Save award</button>
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius:7px;">Cancel</button>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
         </div>
       </form>
     </div>
@@ -289,13 +147,13 @@ if (!$id) {
 <!-- ============ Edit participant popup ============ -->
 <div class="modal fade" id="participantModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content" style="border-radius:12px;overflow:hidden;">
+    <div class="modal-content">
       <form id="participantForm" novalidate>
-        <div class="modal-header" style="background:var(--secondary);color:#fff;">
+        <div class="modal-header">
           <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Edit person</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="background:#FAFBFC;">
+        <div class="modal-body">
           <input type="hidden" name="id">
 
           <div id="dupWarning" class="alert alert-warning d-none">
@@ -325,14 +183,14 @@ if (!$id) {
               </select>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Date of birth</label>
-              <input type="date" class="form-control" name="date_of_birth">
+              <label class="field-label">Date of birth <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="date_of_birth" required>
             </div>
             <div class="col-md-6">
               <label class="field-label">Disability</label>
               <div class="form-check form-switch mt-2">
                 <input class="form-check-input" type="checkbox" name="disability_flag" id="disabilityFlag">
-                <label class="form-check-label" for="disabilityFlag" style="font-size:13px;">Person has a disability</label>
+                <label class="form-check-label" for="disabilityFlag">Person has a disability</label>
               </div>
             </div>
             <div class="col-md-6">
@@ -345,16 +203,16 @@ if (!$id) {
           <span class="section-label-sm"><i class="bi bi-telephone me-1"></i>Contact Details</span>
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="field-label">Home phone</label>
-              <input type="text" class="form-control" name="home_phone">
+              <label class="field-label">Home phone <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="home_phone" required>
             </div>
             <div class="col-md-6">
               <label class="field-label">Work phone</label>
               <input type="text" class="form-control" name="work_phone">
             </div>
             <div class="col-md-12">
-              <label class="field-label">Email address</label>
-              <input type="text" class="form-control" name="email">
+              <label class="field-label">Email address <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" name="email" required>
             </div>
           </div>
 
@@ -362,28 +220,27 @@ if (!$id) {
           <span class="section-label-sm"><i class="bi bi-geo-alt me-1"></i>Location &amp; Employment</span>
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="field-label">Province of residence</label>
-              <select class="form-select" name="province_id" id="provinceSelect"></select>
+              <label class="field-label">Province of residence <span class="text-danger">*</span></label>
+              <select class="form-select" name="province_id" id="provinceSelect" required></select>
             </div>
             <div class="col-md-6">
-              <label class="field-label">District of residence</label>
-              <select class="form-select" name="district_id" id="districtSelect"></select>
+              <label class="field-label">District of residence <span class="text-danger">*</span></label>
+              <select class="form-select" name="district_id" id="districtSelect" required></select>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Organisation <span class="text-danger">*</span></label>
+              <label class="field-label">Organisation <span class="text-muted fw-normal text-lowercase">(optional)</span></label>
               <input type="text" class="form-control" name="organisation" id="organisationInput"
-                     list="organisationList" placeholder="Type the organisation name" required>
+                     list="organisationList" placeholder="Type the organisation name">
               <datalist id="organisationList"></datalist>
             </div>
             <div class="col-md-6">
-              <label class="field-label">Employment category</label>
-              <select class="form-select" name="employment_category_id" id="employmentSelect"></select>
+              <label class="field-label">Employment category <span class="text-danger">*</span></label>
+              <select class="form-select" name="employment_category_id" id="employmentSelect" required></select>
             </div>
           </div>
         </div>
-        <div class="modal-footer" style="background:#F8FAFC;border-top:1px solid #EEF2F7;">
+        <div class="modal-footer">
           <button type="submit" class="btn btn-save-brand"><i class="bi bi-check-lg me-1"></i>Save</button>
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius:7px;">Cancel</button>
         </div>
       </form>
     </div>
@@ -447,25 +304,23 @@ function renderPage(p) {
   document.getElementById('heroId').innerHTML       = `<span class="hero-id">${esc(p.aapng_id)}</span>`;
 
   // ── Hero meta row ──
-  const genderBg    = p.gender === 'Female' ? 'rgba(252,231,243,.5)' : 'rgba(219,234,254,.5)';
-  const genderColor = p.gender === 'Female' ? '#9D174D' : '#1D4ED8';
-  const genderHtml  = p.gender
-    ? `<span style="padding:1px 8px;border-radius:20px;font-size:11px;font-weight:600;background:${genderBg};color:${genderColor};">${esc(p.gender)}</span>`
-    : '<span style="color:rgba(255,255,255,.4);">—</span>';
+  const genderHtml = p.gender
+    ? `<span class="hero-pill">${esc(p.gender)}</span>`
+    : '<span class="hero-muted">—</span>';
 
   const provinceTxt = p.province
     ? esc(p.province) + (p.district ? ', ' + esc(p.district) : '')
-    : '<span style="color:rgba(255,255,255,.4);">Province not recorded</span>';
+    : '<span class="hero-muted">Province not recorded</span>';
 
   document.getElementById('heroMeta').innerHTML = `
-    <div class="hero-meta-item"><i class="bi bi-calendar3"></i><strong>${p.date_of_birth || '<span style="color:rgba(255,255,255,.4);">DOB unknown</span>'}</strong></div>
+    <div class="hero-meta-item"><i class="bi bi-calendar3"></i><strong>${p.date_of_birth ? esc(p.date_of_birth) : '<span class="hero-muted">DOB unknown</span>'}</strong></div>
     <div class="hero-meta-item"><i class="bi bi-gender-ambiguous"></i>${genderHtml}</div>
     <div class="hero-meta-item"><i class="bi bi-geo-alt"></i><strong>${provinceTxt}</strong></div>
-    ${Number(p.disability_flag) ? '<div class="hero-meta-item"><i class="bi bi-universal-access"></i><strong style="color:#FCD34D;">Has disability</strong></div>' : ''}`;
+    ${Number(p.disability_flag) ? '<div class="hero-meta-item"><i class="bi bi-universal-access"></i><span class="hero-pill hero-pill-accent">Has disability</span></div>' : ''}`;
   // ── Hero actions ──
   document.getElementById('heroActions').innerHTML = `
-    <button class="btn-hero-edit" onclick="openEdit()"><i class="bi bi-pencil me-1"></i>Edit</button>
-    ${IS_ADMIN ? `<button class="btn-hero-del" onclick="deletePerson()"><i class="bi bi-trash me-1"></i>Delete</button>` : ''}`;
+    <button class="btn btn-hero-edit" onclick="openEdit()"><i class="bi bi-pencil"></i>Edit details</button>
+    ${IS_ADMIN ? `<button class="btn btn-hero-del" onclick="deletePerson()"><i class="bi bi-trash"></i>Delete</button>` : ''}`;
 
   // ── Info strip (4 cards) ──
   document.getElementById('infoStrip').innerHTML = [
@@ -490,17 +345,17 @@ function renderPage(p) {
         <tr>
           <td><span class="code-chip">${esc(a.scholarship_code)}</span></td>
           <td>${esc(a.intake_year) || '—'}</td>
-          <td>${a.scheme ? `<span class="sc-badge sc-${esc(a.scheme)}">${esc(a.scheme)}</span>` : '<span style="color:#CBD5E1;">—</span>'}</td>
+          <td>${a.scheme ? `<span class="sc-badge sc-${esc(a.scheme)}">${esc(a.scheme)}</span>` : '<span class="empty-dash">—</span>'}</td>
           <td>${esc(a.main_course_name)}</td>
           <td>${esc(a.institution) || '—'}</td>
           <td>${esc(a.study_level) || '—'}</td>
-          <td>${a.scholarship_cost ? 'A$ ' + Number(a.scholarship_cost).toLocaleString('en-AU',{minimumFractionDigits:2}) : '<span style="color:#CBD5E1;">—</span>'}</td>
+          <td>${a.scholarship_cost ? 'A$ ' + Number(a.scholarship_cost).toLocaleString('en-AU',{minimumFractionDigits:2}) : '<span class="empty-dash">—</span>'}</td>
           <td><span class="st-badge st-${esc((a.status||'').replace(/ /g,'-'))}">${esc(a.status) || '—'}</span></td>
           <td>${esc(a.status) === 'On Scholarship'
-              ? `<div style="display:flex;gap:4px;"><button class="btn btn-edit-r" onclick="openAwardEdit(${a.id})"><i class="bi bi-pencil"></i> Edit</button></div>`
+              ? `<div class="row-actions"><button class="btn btn-edit-r" onclick="openAwardEdit(${a.id})"><i class="bi bi-pencil"></i> Edit</button></div>`
               : ''}</td>
         </tr>`).join('')
-    : '<tr><td colspan="9" class="text-muted p-3 text-center" style="font-size:13px;">No awards recorded yet.</td></tr>';
+    : '<tr><td colspan="9" class="text-muted py-5 text-center">No awards recorded yet.</td></tr>';
 }
 
 async function openEdit() {

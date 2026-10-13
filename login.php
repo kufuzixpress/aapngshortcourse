@@ -33,7 +33,6 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login | Short Course Database</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -44,13 +43,13 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
       --secondary:     #003150;
       --secondary-mid: #004470;
       --white:         #FFFFFF;
-      --off-white:     #F4F8FA;
-      --muted:         #8A9DB0;
-      --text:          #1E3040;
-      --border:        #DDE5EC;
+      --off-white:     #FFFFFF;
+      --muted:         #747678;
+      --text:          #1B2733;
+      --border:        #CBCCC7;
     }
 
-    html, body { height: 100%; font-family: 'Inter', sans-serif; }
+    html, body { height: 100%; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; }
 
     body {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -72,7 +71,7 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
     }
 
     .login-heading { margin-bottom: 28px; text-align: center; }
-    .login-heading h2 { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.4px; }
+    .login-heading h2 { font-family: 'Times New Roman', Times, Georgia, serif; font-size: 28px; font-weight: 700; color: var(--secondary); margin-bottom: 6px; line-height: 1.2; }
     .login-heading p  { font-size: 14px; color: var(--muted); }
 
     /* ── INLINE NOTIFICATION ──────────────────────────────────── */
@@ -105,13 +104,13 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
 
     /* ── FORM ELEMENTS ────────────────────────────────────────── */
     .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 700; color: #556070; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 8px; }
     .input-wrap { position: relative; }
     .input-wrap .field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; transition: color 0.2s; }
     .input-wrap input {
       width: 100%; padding: 12px 42px 12px 40px;
       border: 1.5px solid var(--border); border-radius: 8px;
-      font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text);
+      font-size: 14px; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; color: var(--text);
       background: var(--off-white); transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; outline: none;
     }
     .input-wrap input:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px var(--primary-glow); }
@@ -121,14 +120,14 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
     .pw-toggle:hover { color: var(--primary); }
 
     .form-options { display: flex; justify-content: flex-end; margin-bottom: 24px; }
-    .form-options a { font-size: 13px; color: var(--primary); font-weight: 600; text-decoration: none; transition: color 0.2s; }
+    .form-options a { font-size: 13px; color: #1A6F80; font-weight: 700; text-decoration: none; transition: color 0.2s; }
     .form-options a:hover { color: var(--secondary); }
 
     .btn-signin {
       width: 100%; padding: 14px;
       background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-mid) 100%);
       color: var(--white); border: none; border-radius: 8px;
-      font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif;
+      font-size: 15px; font-weight: 700; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
       letter-spacing: 0.3px; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 10px;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -140,7 +139,7 @@ $bgImage = APP_URL . '/assets/img/background.jpg';
     .btn-signin:active { transform: translateY(0); }
     .btn-signin.loading { opacity: 0.75; pointer-events: none; }
 
-    .login-footer { text-align: center; font-size: 11.5px; color: #B0BEC8; margin-top: 28px; line-height: 1.6; }
+    .login-footer { text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 28px; line-height: 1.6; }
 
     @media (max-width: 480px) {
       .login-panel { padding: 32px 24px 24px; }

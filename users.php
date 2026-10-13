@@ -1,108 +1,55 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_admin();
-$page_title = '';
+$page_title = 'User management';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<style>
-  :root {
-    --primary:   #3CB6CE;
-    --secondary: #003150;
-  }
-  .page-title { font-size:22px; font-weight:800; color:var(--secondary); }
-  .page-sub   { font-size:13px; color:#64748B; margin-bottom:16px; }
-
-  /* Filter bar */
-  .filter-bar { background:#fff; border-radius:10px; padding:10px 16px; margin-bottom:16px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
-  .filter-bar label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#64748B; margin-bottom:3px; display:block; }
-  .filter-bar .form-control, .filter-bar .form-select { border-radius:6px; font-size:12px; border-color:#DDE5EC; }
-  .btn-clear-filter { background:#F1F5F9; color:#475569; border-radius:7px; font-size:13px; }
-
-  /* Page card */
-  .page-card { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
-  .page-card-header { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid #EEF2F7; }
-  .page-card-header h5 { margin:0; font-size:15px; font-weight:700; color:var(--secondary); }
-  .btn-primary-custom { background:var(--primary); border-color:var(--primary); color:#fff; border-radius:7px; font-weight:600; font-size:13px; }
-  .btn-primary-custom:hover { background:#2A96AC; border-color:#2A96AC; color:#fff; }
-
-  /* Table */
-  #users-table thead th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#8A9DB0; font-weight:600; border-top:none; background:#FAFBFC; }
-  #users-table tbody td { font-size:13px; color:#334155; vertical-align:middle; }
-  #users-table tbody tr:hover { background:#F8FAFC; }
-
-  /* Action pills */
-  .btn-edit-r  { background:#FFF7ED; color:#C2410C; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-unlock  { background:#FEF9C3; color:#854D0E; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-power   { background:#F1F5F9; color:#475569; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-  .btn-del     { background:#FEF2F2; color:#DC2626; border:none; border-radius:5px; font-size:11px; font-weight:600; padding:4px 10px; }
-
-  /* Role + status badges */
-  .role-badge   { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
-  .role-admin   { background:#EDE9FE; color:#6D28D9; }
-  .role-staff   { background:#EEF2F7; color:var(--secondary); }
-  .us-active    { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#DCFCE7; color:#15803D; }
-  .us-inactive  { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#F1F5F9; color:#64748B; }
-  .us-locked    { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#FEE2E2; color:#991B1B; }
-
-  /* Modal */
-  .field-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#64748B; display:block; margin-bottom:6px; }
-  .modal .form-control, .modal .form-select { border-radius:7px; border-color:#DDE5EC; font-size:13px; }
-  .modal .form-control:focus, .modal .form-select:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(60,182,206,.15); }
-  .modal-header-brand { background:var(--secondary); color:#fff; }
-  .btn-save-brand { background:var(--secondary); color:#fff; border-radius:7px; font-weight:600; min-width:120px; }
-  .btn-save-brand:hover { background:#00263d; color:#fff; }
-</style>
-
-<div class="page-title">User management</div>
-<div class="page-sub">Add staff accounts and manage roles, access and passwords</div>
-
-<!-- Filter Bar -->
-<div class="filter-bar">
-  <div class="row g-2 align-items-end">
-    <div class="col-md-4">
-      <label>Search</label>
-      <div class="input-group input-group-sm">
-        <span class="input-group-text" style="border-color:#DDE5EC;background:#FAFBFC;"><i class="bi bi-search"></i></span>
-        <input type="text" class="form-control" id="tableSearch" placeholder="Search by name, username, email…">
-      </div>
-    </div>
-    <div class="col-md-3">
-      <label>Role</label>
-      <select class="form-select form-select-sm" id="roleFilter">
-        <option value="">All Roles</option>
-        <option value="Admin">Admin</option>
-        <option value="Staff">Staff</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <label>Status</label>
-      <select class="form-select form-select-sm" id="statusFilter">
-        <option value="">All Statuses</option>
-        <option value="Active">Active</option>
-        <option value="Inactive">Inactive</option>
-        <option value="Locked">Locked</option>
-      </select>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-sm btn-clear-filter" id="clearFilters" title="Clear filters">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
+<div class="page-header">
+  <div>
+    <span class="page-eyebrow">Administration</span>
+    <h1 class="page-title">User management</h1>
+    <p class="page-sub">Add staff accounts and manage roles, access and passwords.</p>
+  </div>
+  <div class="page-actions">
+    <button type="button" class="btn btn-primary" onclick="openUserForm()">
+      <i class="bi bi-person-plus"></i>Add new user
+    </button>
   </div>
 </div>
 
-<!-- Table -->
 <div class="page-card">
   <div class="page-card-header">
-    <h5><i class="bi bi-person-gear me-2" style="color:var(--primary)"></i>Users</h5>
-    <button class="btn btn-primary-custom" onclick="openUserForm()">
-      <i class="bi bi-person-plus me-1"></i> Add New
-    </button>
+    <div class="table-toolbar">
+      <div class="search-field">
+        <i class="bi bi-search"></i>
+        <label class="visually-hidden" for="tableSearch">Search</label>
+        <input type="search" class="form-control" id="tableSearch" placeholder="Search by name, username or email…">
+      </div>
+      <div class="toolbar-filter">
+        <label class="visually-hidden" for="roleFilter">Role</label>
+        <select class="form-select" id="roleFilter">
+          <option value="">All roles</option>
+          <option value="Admin">Admin</option>
+          <option value="Staff">Staff</option>
+        </select>
+      </div>
+      <div class="toolbar-filter">
+        <label class="visually-hidden" for="statusFilter">Status</label>
+        <select class="form-select" id="statusFilter">
+          <option value="">All statuses</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="Locked">Locked</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-light" id="clearFilters" title="Clear search and filters">
+        <i class="bi bi-arrow-counterclockwise"></i><span class="d-none d-sm-inline">Reset</span>
+      </button>
+    </div>
   </div>
-  <div class="p-3">
-    <div class="table-responsive">
-      <table id="users-table" class="table table-hover w-100 mb-0">
+  <div class="table-responsive">
+      <table id="users-table" class="table table-hover table-flush w-100 mb-0">
         <thead>
           <tr>
             <th>Full name</th><th>Username</th><th>Email</th><th>Role</th>
@@ -110,20 +57,19 @@ require_once __DIR__ . '/includes/header.php';
           </tr>
         </thead>
       </table>
-    </div>
   </div>
 </div>
 
 <!-- ============ Add / Edit popup ============ -->
 <div class="modal fade" id="userModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog">
-    <div class="modal-content" style="border-radius:12px;overflow:hidden;">
+    <div class="modal-content">
       <form id="userForm" novalidate>
         <div class="modal-header modal-header-brand">
           <h5 class="modal-title" id="userModalTitle"><i class="bi bi-person-plus me-2"></i>Add new user</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="background:#FAFBFC;">
+        <div class="modal-body">
           <input type="hidden" name="id">
           <div class="mb-3">
             <label class="field-label">Full name <span class="text-danger">*</span></label>
@@ -150,9 +96,9 @@ require_once __DIR__ . '/includes/header.php';
             <div class="form-text" id="passwordHint">Minimum 8 characters.</div>
           </div>
         </div>
-        <div class="modal-footer" style="background:#F8FAFC;border-top:1px solid #EEF2F7;">
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-save-brand"><i class="bi bi-check-lg me-1"></i>Save</button>
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius:7px;">Cancel</button>
         </div>
       </form>
     </div>
@@ -197,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return `<span class="${cls}">${s}</span>`; } },
       { data: 'last_login', render: v => v || '—' },
       { data: null, orderable: false, className: 'text-nowrap', render: row => `
-          <div style="display:flex;gap:4px;">
+          <div class="row-actions">
             <button class="btn btn-edit-r" onclick="openUserForm(${row.id})" title="Edit"><i class="bi bi-pencil"></i> Edit</button>
             ${isLocked(row) ? `<button class="btn btn-unlock" onclick="unlockUser(${row.id})" title="Unlock"><i class="bi bi-unlock"></i></button>` : ''}
             <button class="btn btn-power" onclick="toggleUser(${row.id})" title="${Number(row.is_active) ? 'Deactivate' : 'Activate'}"><i class="bi bi-power"></i></button>
@@ -294,4 +240,4 @@ async function deleteUser(id) {
 }
 </script>
 
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>

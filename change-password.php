@@ -30,25 +30,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $page_title = 'Change password';
 require_once __DIR__ . '/includes/header.php';
 ?>
-<div class="row justify-content-center">
-  <div class="col-md-5">
-    <div class="card">
-      <div class="card-body">
+<div class="page-header">
+  <div>
+    <span class="page-eyebrow">My account</span>
+    <h1 class="page-title">Change password</h1>
+    <p class="page-sub">Choose a new password of at least 8 characters. You'll stay signed in.</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-6 col-xl-5">
+    <div class="page-card">
+      <div class="page-card-header"><h5><i class="bi bi-shield-lock"></i>Update your password</h5></div>
+      <div class="page-card-body">
         <form method="post">
           <?= csrf_field() ?>
           <div class="mb-3">
-            <label class="form-label">Current password</label>
-            <input type="password" name="current_password" class="form-control" required autofocus>
+            <label class="field-label" for="currentPassword">Current password <span class="text-danger">*</span></label>
+            <input type="password" name="current_password" id="currentPassword" class="form-control" autocomplete="current-password" required autofocus>
           </div>
           <div class="mb-3">
-            <label class="form-label">New password (min 8 characters)</label>
-            <input type="password" name="password" class="form-control" minlength="8" required>
+            <label class="field-label" for="newPassword">New password <span class="text-danger">*</span></label>
+            <input type="password" name="password" id="newPassword" class="form-control" minlength="8" autocomplete="new-password" required>
+            <div class="form-text">At least 8 characters.</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Confirm new password</label>
-            <input type="password" name="password_confirm" class="form-control" minlength="8" required>
+          <div class="mb-4">
+            <label class="field-label" for="confirmPassword">Confirm new password <span class="text-danger">*</span></label>
+            <input type="password" name="password_confirm" id="confirmPassword" class="form-control" minlength="8" autocomplete="new-password" required>
           </div>
-          <button type="submit" class="btn btn-brand">Change password</button>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i>Change password</button>
+            <a href="index.php" class="btn btn-light">Cancel</a>
+          </div>
         </form>
       </div>
     </div>

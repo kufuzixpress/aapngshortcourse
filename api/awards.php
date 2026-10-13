@@ -73,8 +73,10 @@ if ($action === 'save') {
     } elseif (!in_array($scheme, ['SCA', 'HEP', 'Other'], true)) {
         $errors['scheme'] = 'Scheme must be SCA, HEP or Other.';
     }
-    if ($startDate && !strtotime($startDate)) $errors['study_start_date'] = 'Invalid date.';
-    if ($endDate && !strtotime($endDate))     $errors['study_end_date'] = 'Invalid date.';
+    if (!$startDate)                     $errors['study_start_date'] = 'Study start date is required.';
+    elseif (!strtotime($startDate))      $errors['study_start_date'] = 'Invalid date.';
+    if (!$endDate)                       $errors['study_end_date'] = 'Study end date is required.';
+    elseif (!strtotime($endDate))        $errors['study_end_date'] = 'Invalid date.';
     if ($startDate && $endDate && strtotime($endDate) < strtotime($startDate)) {
         $errors['study_end_date'] = 'End date cannot be before the start date.';
     }
