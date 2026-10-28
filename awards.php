@@ -183,6 +183,13 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <!-- ============ Bulk finalise popup ============ -->
+<style>
+  /* Kept on this page so the list scrolls even if an older theme.css is cached. */
+  #bulkModal .modal-content > form { display: flex; flex-direction: column; min-height: 0; max-height: 100%; overflow: hidden; }
+  #bulkModal .modal-content > form > .modal-body { overflow-y: auto; }
+  #bulkModal .bulk-list { max-height: 45vh; overflow: auto; border: 1px solid var(--border, #dee2e6); border-radius: 8px; }
+  #bulkModal .bulk-list thead th { position: sticky; top: 0; z-index: 1; background: var(--surface, #fff); }
+</style>
 <div class="modal fade" id="bulkModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
@@ -228,7 +235,8 @@ require_once __DIR__ . '/includes/header.php';
               </div>
             </div>
 
-            <div class="table-responsive mt-3">
+            <!-- The list scrolls on its own, so the end date and the footer buttons stay in reach. -->
+            <div class="bulk-list mt-3">
               <table class="table table-sm align-middle mb-0">
                 <thead>
                   <tr>

@@ -20,7 +20,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (count($nameParts) > 1 ? s
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@2.0.8/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/brand.css">
   <!-- Theme last, so it has the final say over the libraries above. -->
-  <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/theme.css?v=2">
+  <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/theme.css?v=3">
   <script>
     const APP_URL    = '<?= APP_URL ?>';
     const CSRF_TOKEN = '<?= e(csrf_token()) ?>';
