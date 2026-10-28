@@ -569,6 +569,16 @@ code { color: var(--brand-teal-ink); background: var(--brand-teal-50); padding: 
 }
 .modal-footer > * { margin: 0; }
 .modal-backdrop.show { opacity: .45; background: var(--brand-navy); }
+/* Scrollable popups whose header, body and footer sit inside a <form>: let the form
+   pass the height limit down, so only the body scrolls and the footer buttons stay in view. */
+.modal-dialog-scrollable .modal-content > form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+.modal-dialog-scrollable .modal-content > form > .modal-body { overflow-y: auto; }
 
 /* --------------------------------------------------------------------------
    9. Tables and DataTables
