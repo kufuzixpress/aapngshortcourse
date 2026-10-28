@@ -101,7 +101,11 @@ if (!$id) {
             <div class="col-md-6">
               <label class="field-label">Study start date <span class="text-danger">*</span></label>
               <input type="date" class="form-control" name="study_start_date" required>
-              <div class="form-text">The end date is recorded when the award is finalised.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="field-label">Planned end date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="study_end_date" required>
+              <div class="form-text">The actual end date is confirmed when the award is finalised.</div>
             </div>
           </div>
 
