@@ -40,7 +40,7 @@ require_once __DIR__ . '/includes/header.php';
         <thead>
           <tr>
             <th>Code</th><th>AAPNG ID</th><th>Participant</th><th>Intake</th><th>Scheme</th>
-            <th>Course</th><th>Institution</th><th>Status</th><th class="no-sort" style="width:170px;">Actions</th>
+            <th>Course</th><th>Institution</th><th>Status</th><th class="no-sort" style="width:250px;">Actions</th>
           </tr>
         </thead>
       </table>
@@ -100,10 +100,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="col-md-6">
               <label class="field-label">Study start date <span class="text-danger">*</span></label>
               <input type="date" class="form-control" name="study_start_date" required>
-            </div>
-            <div class="col-md-6">
-              <label class="field-label">Study end date <span class="text-danger">*</span></label>
-              <input type="date" class="form-control" name="study_end_date" required>
+              <div class="form-text">The end date is recorded when the award is finalised.</div>
             </div>
           </div>
 
@@ -124,20 +121,54 @@ require_once __DIR__ . '/includes/header.php';
             <div class="col-md-6">
               <label class="field-label">Scholarship status <span class="text-danger">*</span></label>
               <select class="form-select" name="status_id" id="statusSelect" required></select>
-            </div>
-            <div class="col-md-6 d-none" id="costWrap">
-              <label class="field-label">Scholarship cost (PGK) <span class="text-danger">*</span></label>
-              <div class="input-group">
-                <span class="input-group-text">K</span>
-                <input type="number" step="0.01" min="0" class="form-control" name="scholarship_cost" id="costInput">
-              </div>
-              <div class="form-text">Required when the scholarship is completed.</div>
+              <div class="form-text" id="statusHint">Use <strong>Finalise</strong> on the awards list to mark an award as completed.</div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-save-brand"><i class="bi bi-check-lg me-1"></i>Save award</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Finalise popup ============ -->
+<div class="modal fade" id="finaliseModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="finaliseForm" novalidate>
+        <div class="modal-header modal-header-brand">
+          <h5 class="modal-title" id="finaliseModalTitle"><i class="bi bi-flag me-2"></i>Finalise award</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id">
+          <div class="finalise-summary" id="finaliseSummary"></div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="field-label" for="finaliseEndDate">Study end date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="study_end_date" id="finaliseEndDate" required>
+            </div>
+            <div class="col-md-6">
+              <label class="field-label" for="finaliseCost">Scholarship cost (PGK) <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text">K</span>
+                <input type="number" step="0.01" min="0" class="form-control" name="scholarship_cost" id="finaliseCost" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-info d-flex gap-2 mt-3 mb-0 py-2 small">
+            <i class="bi bi-info-circle"></i>
+            <span id="finaliseNote">Status will change to <strong>Completed</strong>. After this, only an administrator can amend the end date or cost.</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-save-brand" id="finaliseSubmit"><i class="bi bi-check2-circle me-1"></i>Finalise award</button>
         </div>
       </form>
     </div>
@@ -162,13 +193,14 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <script>
-let awardsTable, awardModal, awardViewModal;
+let awardsTable, awardModal, awardViewModal, finaliseModal;
 let participants = [];   // {id, aapng_id, name, date_of_birth}
 let currentAwardId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   awardModal = new bootstrap.Modal('#awardModal');
   awardViewModal = new bootstrap.Modal('#awardViewModal');
+  finaliseModal = new bootstrap.Modal('#finaliseModal');
 
   const [iy, inst, lvl, fld, st, ppl] = await Promise.all([
     api('lookups.php?table=intake_years&action=options'),
@@ -183,6 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   fillSelect(document.getElementById('levelSelect'), lvl.data || []);
   fillSelect(document.getElementById('fieldSelect'), fld.data || []);
   fillSelect(document.getElementById('statusSelect'), st.data || []);
+  lockCompletedOption();
 
   // Status filter above the table (re-uses the same lookup data).
   const statusFilter = document.getElementById('statusFilter');
@@ -201,9 +234,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('participantId').value = match ? match.id : '';
     e.target.classList.toggle('is-invalid', !match && e.target.value !== '');
   });
-
-  // Scholarship cost is only visible (and required) when status is "Completed".
-  document.getElementById('statusSelect').addEventListener('change', toggleCostField);
 
   // DataTable. Default search box is hidden — the filter bar handles it.
   awardsTable = new DataTable('#awards-table', {
@@ -229,6 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="row-actions">
             <button class="btn btn-view" onclick="viewAward(${row.id})"><i class="bi bi-eye"></i> View</button>
             <button class="btn btn-edit-r" onclick="openAwardForm(${row.id})"><i class="bi bi-pencil"></i> Edit</button>
+            ${finaliseButton(row)}
             ${IS_ADMIN ? `<button class="btn btn-del" onclick="deleteAward(${row.id})"><i class="bi bi-trash"></i> Del</button>` : ''}
           </div>`
       },
@@ -279,19 +310,26 @@ function setParticipantField(participantId, locked) {
   input.readOnly = locked;   // lock the person when editing an existing award
 }
 
-function toggleCostField() {
-  const sel  = document.getElementById('statusSelect');
-  const wrap = document.getElementById('costWrap');
-  const cost = document.getElementById('costInput');
-  const name = sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text.trim() : '';
-  const isCompleted = name.toLowerCase() === 'completed';
+const isCompleted = (status) => String(status || '').trim().toLowerCase() === 'completed';
 
-  wrap.classList.toggle('d-none', !isCompleted);
-  cost.required = isCompleted;
-  if (!isCompleted) {
-    cost.value = '';
-    cost.classList.remove('is-invalid');
+/**
+ * "Completed" can't be picked in the add/edit form — finalising is its own step.
+ * The option stays in the list (disabled) so a finalised award still shows its status.
+ */
+function lockCompletedOption() {
+  for (const opt of document.getElementById('statusSelect').options) {
+    if (isCompleted(opt.text)) opt.disabled = true;
   }
+}
+
+/** Finalise for open awards; on finalised awards only admins get "Amend". */
+function finaliseButton(row) {
+  if (!isCompleted(row.status)) {
+    return `<button class="btn btn-finalise" onclick="openFinalise(${row.id})"><i class="bi bi-flag"></i> Finalise</button>`;
+  }
+  return IS_ADMIN
+    ? `<button class="btn btn-finalise is-done" onclick="openFinalise(${row.id})" title="Amend end date or cost"><i class="bi bi-check2-circle"></i> Amend</button>`
+    : '';
 }
 
 async function openAwardForm(id = null, preselectParticipant = null) {
@@ -303,15 +341,24 @@ async function openAwardForm(id = null, preselectParticipant = null) {
     : '<i class="bi bi-plus-circle me-2"></i>Record new award';
   form.elements.id.value = id || '';
 
+  const statusSelect = document.getElementById('statusSelect');
+  let finalised = false;
+
   if (id) {
     const res = await api(`awards.php?action=get&id=${id}`);
     if (!res.success) return toast('error', res.message);
     fillForm(form, res.data);
     setParticipantField(res.data.participant_id, true);
+    finalised = statusSelect.selectedIndex >= 0 && isCompleted(statusSelect.options[statusSelect.selectedIndex].text);
   } else {
     setParticipantField(preselectParticipant, false);
   }
-  toggleCostField();
+
+  // A finalised award keeps its status; the server enforces the same rule.
+  statusSelect.disabled = finalised;
+  document.getElementById('statusHint').innerHTML = finalised
+    ? 'This award is finalised. ' + (IS_ADMIN ? 'Use <strong>Amend</strong> to change the end date or cost.' : 'Ask an administrator to amend the end date or cost.')
+    : 'Use <strong>Finalise</strong> on the awards list to mark an award as completed.';
   awardModal.show();
 }
 
@@ -325,18 +372,72 @@ document.getElementById('awardForm').addEventListener('submit', async (e) => {
     return toast('warning', 'Select a participant from the list.');
   }
 
-  // Cost is mandatory when status is "Completed".
-  const costInput = document.getElementById('costInput');
-  if (costInput.required && costInput.value === '') {
-    costInput.classList.add('is-invalid');
-    return toast('warning', 'Scholarship cost is required when the status is Completed.');
-  }
-  costInput.classList.remove('is-invalid');
-
   const res = await api('awards.php?action=save', data);
   if (res.success) {
     toast('success', res.message);
     awardModal.hide();
+    awardsTable.ajax.reload(null, false);
+    return;
+  }
+  if (res.data?.errors) setInvalid(form, res.data.errors);
+  toast('warning', res.message);
+});
+
+async function openFinalise(id) {
+  const form = document.getElementById('finaliseForm');
+  form.reset();
+  setInvalid(form, {});
+
+  const res = await api(`awards.php?action=get&id=${id}`);
+  if (!res.success) return toast('error', res.message);
+  const a = res.data;
+  const amending = isCompleted(document.querySelector(`#statusSelect option[value="${Number(a.status_id)}"]`)?.text);
+
+  form.elements.id.value = a.id;
+  form.elements.study_end_date.value = a.study_end_date || '';
+  form.elements.scholarship_cost.value = a.scholarship_cost ?? '';
+
+  // The end date has to fall between the start date and today.
+  const endInput = form.elements.study_end_date;
+  endInput.min = a.study_start_date || '';
+  endInput.max = new Date().toLocaleDateString('en-CA');   // en-CA formats as YYYY-MM-DD
+
+  document.getElementById('finaliseSummary').innerHTML = `
+    <div class="d-flex align-items-center gap-2 mb-1">
+      <span class="id-chip">${esc(a.scholarship_code)}</span>
+      <strong>${esc(a.participant)}</strong>
+    </div>
+    <div class="text-muted small">${esc(a.main_course_name)} · started ${esc(a.study_start_date) || '—'}</div>`;
+
+  document.getElementById('finaliseModalTitle').innerHTML = amending
+    ? '<i class="bi bi-pencil-square me-2"></i>Amend finalised award'
+    : '<i class="bi bi-flag me-2"></i>Finalise award';
+  document.getElementById('finaliseNote').innerHTML = amending
+    ? 'This award is already <strong>Completed</strong>. Your changes to the end date and cost will be saved.'
+    : 'Status will change to <strong>Completed</strong>. After this, only an administrator can amend the end date or cost.';
+  document.getElementById('finaliseSubmit').innerHTML = amending
+    ? '<i class="bi bi-check-lg me-1"></i>Save changes'
+    : '<i class="bi bi-check2-circle me-1"></i>Finalise award';
+
+  finaliseModal.show();
+}
+
+document.getElementById('finaliseForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const data = formData(form);
+
+  // Quick client-side check; the API validates the same rules.
+  const errors = {};
+  if (!data.study_end_date) errors.study_end_date = 'Study end date is required.';
+  if (data.scholarship_cost === '' || data.scholarship_cost == null) errors.scholarship_cost = 'Scholarship cost is required.';
+  setInvalid(form, errors);
+  if (Object.keys(errors).length) return toast('warning', 'Enter the end date and cost to finalise.');
+
+  const res = await api('awards.php?action=finalise', data);
+  if (res.success) {
+    toast('success', res.message);
+    finaliseModal.hide();
     awardsTable.ajax.reload(null, false);
     return;
   }

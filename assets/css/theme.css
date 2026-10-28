@@ -460,7 +460,7 @@ code { color: var(--brand-teal-ink); background: var(--brand-teal-50); padding: 
 }
 
 /* Table row actions — compact, quiet until hovered */
-.btn-view, .btn-edit-r, .btn-del, .btn-unlock, .btn-power, .btn-manage {
+.btn-view, .btn-edit-r, .btn-finalise, .btn-del, .btn-unlock, .btn-power, .btn-manage {
   --bs-btn-padding-x: 9px;
   --bs-btn-padding-y: 4px;
   --bs-btn-font-size: .75rem;
@@ -479,6 +479,10 @@ code { color: var(--brand-teal-ink); background: var(--brand-teal-50); padding: 
 .btn-view i, .btn-edit-r i, .btn-unlock i, .btn-power i, .btn-manage i { color: var(--brand-teal-ink); }
 .btn-del { --bs-btn-color: var(--danger); --bs-btn-hover-color: var(--danger); --bs-btn-hover-bg: var(--danger-bg); --bs-btn-hover-border-color: var(--danger); }
 .btn-unlock { --bs-btn-color: var(--warning); }
+/* Finalise is the forward step for an open award; once done it turns into a quiet "Amend" (admins only) */
+.btn-finalise { --bs-btn-color: var(--success); --bs-btn-hover-color: var(--success); --bs-btn-hover-bg: var(--success-bg); --bs-btn-hover-border-color: var(--success); }
+.btn-finalise.is-done { --bs-btn-color: var(--brand-navy); --bs-btn-hover-color: var(--brand-navy); --bs-btn-hover-bg: var(--brand-navy-50); --bs-btn-hover-border-color: var(--brand-navy); }
+.finalise-summary { background: var(--brand-navy-50); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 16px; }
 .row-actions { display: flex; gap: 4px; justify-content: flex-end; }
 
 /* --------------------------------------------------------------------------

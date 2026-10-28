@@ -101,10 +101,7 @@ if (!$id) {
             <div class="col-md-6">
               <label class="field-label">Study start date <span class="text-danger">*</span></label>
               <input type="date" class="form-control" name="study_start_date" required>
-            </div>
-            <div class="col-md-6">
-              <label class="field-label">Study end date <span class="text-danger">*</span></label>
-              <input type="date" class="form-control" name="study_end_date" required>
+              <div class="form-text">The end date is recorded when the award is finalised.</div>
             </div>
           </div>
 
@@ -123,14 +120,7 @@ if (!$id) {
             <div class="col-md-6">
               <label class="field-label">Scholarship status <span class="text-danger">*</span></label>
               <select class="form-select" name="status_id" id="awardStatus" required></select>
-            </div>
-            <div class="col-md-6 d-none" id="awardCostWrap">
-              <label class="field-label">Scholarship cost (AUD) <span class="text-danger">*</span></label>
-              <div class="input-group">
-                <span class="input-group-text">A$</span>
-                <input type="number" step="0.01" min="0" class="form-control" name="scholarship_cost" id="awardCost">
-              </div>
-              <div class="form-text">Required when the scholarship is completed.</div>
+              <div class="form-text">To mark an award as completed, use <strong>Finalise</strong> on the Awards page.</div>
             </div>
           </div>
         </div>
@@ -278,9 +268,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!this.checked) type.value = '';
   });
 
-  // Award status → show/hide cost field
-  document.getElementById('awardStatus').addEventListener('change', toggleAwardCost);
-
   await loadParticipant();
 });
 
@@ -412,18 +399,11 @@ async function loadAwardLookups() {
   fillSelect(document.getElementById('awardLevel'),       lvl.data  || []);
   fillSelect(document.getElementById('awardField'),       fld.data  || []);
   fillSelect(document.getElementById('awardStatus'),      st.data   || []);
+  // "Completed" is set through the Finalise step on the Awards page, not here.
+  for (const opt of document.getElementById('awardStatus').options) {
+    if (opt.text.trim().toLowerCase() === 'completed') opt.disabled = true;
+  }
   awardLookupsDone = true;
-}
-
-function toggleAwardCost() {
-  const sel  = document.getElementById('awardStatus');
-  const wrap = document.getElementById('awardCostWrap');
-  const cost = document.getElementById('awardCost');
-  const name = sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text.trim() : '';
-  const isCompleted = name.toLowerCase() === 'completed';
-  wrap.classList.toggle('d-none', !isCompleted);
-  cost.required = isCompleted;
-  if (!isCompleted) { cost.value = ''; cost.classList.remove('is-invalid'); }
 }
 
 async function openAwardEdit(awardId) {
@@ -435,7 +415,6 @@ async function openAwardEdit(awardId) {
   const res = await api(`awards.php?action=get&id=${awardId}`);
   if (!res.success) return toast('error', res.message);
   fillForm(form, res.data);
-  toggleAwardCost();
   awardModal.show();
 }
 
@@ -443,14 +422,6 @@ document.getElementById('awardForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = e.target;
   const data = formData(form);
-
-  // Client-side cost validation
-  const costInput = document.getElementById('awardCost');
-  if (costInput.required && !costInput.value) {
-    costInput.classList.add('is-invalid');
-    return toast('warning', 'Scholarship cost is required when the status is Completed.');
-  }
-  costInput.classList.remove('is-invalid');
 
   const res = await api('awards.php?action=save', data);
   if (res.success) {
