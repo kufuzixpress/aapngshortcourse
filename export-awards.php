@@ -59,6 +59,7 @@ if (isset($_GET['export'])) {
             sl.name                 AS 'Level of Study',
             fos.name                AS 'Field of Study',
             s.study_start_date      AS 'Study Start Date',
+            s.planned_end_date      AS 'Planned End Date',
             s.study_end_date        AS 'Study End Date',
             ss.name                 AS 'Scholarship Status',
             s.scholarship_cost      AS 'Scholarship Cost (AUD)'
@@ -220,7 +221,7 @@ require_once __DIR__ . '/includes/header.php';
                           'Disability Type','Home Phone','Work Phone','Email','Province','District',
                           'Organisation','Employment Category','Scholarship Code','Intake Year','Scheme',
                           'Institution','Main Course Name','Level of Study','Field of Study',
-                          'Study Start Date','Study End Date','Scholarship Status','Scholarship Cost (AUD)'] as $col): ?>
+                          'Study Start Date','Planned End Date','Study End Date','Scholarship Status','Scholarship Cost (AUD)'] as $col): ?>
             <span class="col-tag"><?= $col ?></span>
           <?php endforeach; ?>
         </div>

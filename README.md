@@ -50,6 +50,18 @@ aapng-awards/
    then **delete the `setup/` folder**.
 5. Log in at `APP_URL/login.php`.
 
+## Upgrading an existing install
+
+Database changes are kept in `database/migrations/`. Back up the database, then run each new file once, in date order:
+
+```bash
+mysql -u root -p <database> < database/migrations/2026_10_28_add_planned_end_date.sql
+```
+
+| Migration | What it does |
+|---|---|
+| `2026_10_28_add_planned_end_date.sql` | Adds `scholarships.planned_end_date`. Copies the current end date into it, then clears the end date on awards that are not Completed, since the actual end date is now recorded when an award is finalised. |
+
 ## Branding
 
 Edit the CSS variables at the top of `assets/css/brand.css`:
