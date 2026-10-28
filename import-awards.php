@@ -10,10 +10,10 @@ if (isset($_GET['template'])) {
     header('Content-Disposition: attachment; filename="awards-import-template.csv"');
     $out = fopen('php://output', 'w');
     fputcsv($out, ['AAPNG ID','Scholarship code','Intake Year','Scheme','Institution name','Main Course Name',
-                   'Level of study','Field of study','Study Start date','Study End date',
+                   'Level of study','Field of study','Study Start date','Planned End date','Study End date',
                    'Scholarship Status','Scholarship cost']);
     fputcsv($out, ['KILJOH120385', '', '2024', 'SCA', 'APTC', 'Certificate IV in Leadership',
-                   'Short course', 'Business & Management', '05/02/2024', '28/06/2024', 'Completed', '15000']);
+                   'Short course', 'Business & Management', '05/02/2024', '28/06/2024', '28/06/2024', 'Completed', '15000']);
     fclose($out);
     exit;
 }
@@ -43,6 +43,8 @@ function header_map(): array {
         'fieldofstudy'      => 'field',
         'studystartdate'    => 'start_date',
         'startdate'         => 'start_date',
+        'plannedenddate'    => 'planned_end',
+        'plannedend'        => 'planned_end',
         'studyenddate'      => 'end_date',
         'enddate'           => 'end_date',
         'scholarshipstatus' => 'status',
@@ -208,9 +210,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $insert = $pdo->prepare(
                     'INSERT INTO scholarships
                         (scholarship_code, participant_id, intake_year_id, scheme, institution_id, main_course_name,
-                         study_level_id, field_of_study_id, study_start_date, study_end_date,
+                         study_level_id, field_of_study_id, study_start_date, planned_end_date, study_end_date,
                          status_id, scholarship_cost, created_by)
-                     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)'
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
                 );
 
                 $pdo->beginTransaction();
@@ -220,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (count(array_filter($row, fn($c) => trim((string)$c) !== '')) === 0) continue;
 
                         $v = ['aapng_id'=>'','code'=>'','intake_year'=>'','scheme'=>'','institution'=>'','course'=>'',
-                              'level'=>'','field'=>'','start_date'=>'','end_date'=>'','status'=>'','cost'=>''];
+                              'level'=>'','field'=>'','start_date'=>'','planned_end'=>'','end_date'=>'','status'=>'','cost'=>''];
                         foreach ($cols as $i => $field) $v[$field] = trim((string)($row[$i] ?? ''));
 
                         $label = $v['aapng_id'] . ($v['course'] !== '' ? ' — ' . $v['course'] : '');
@@ -247,6 +249,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $end = $v['end_date'] !== '' ? parse_date($v['end_date']) : null;
                         if ($v['end_date'] !== '' && !$end) $errs[] = 'invalid end date "' . $v['end_date'] . '"';
                         if ($start && $end && $end < $start) $errs[] = 'end date is before start date';
+                        // Older files have no planned end date column — fall back to the end date.
+                        $planned = $v['planned_end'] !== '' ? parse_date($v['planned_end']) : $end;
+                        if ($v['planned_end'] !== '' && !$planned) $errs[] = 'invalid planned end date "' . $v['planned_end'] . '"';
+                        if ($start && $planned && $planned < $start) $errs[] = 'planned end date is before start date';
+                        // Only completed awards have an actual end date; others get it when finalised.
+                        if (strcasecmp($v['status'], 'Completed') !== 0) $end = null;
 
                         $cost = $v['cost'] !== '' ? parse_cost($v['cost']) : null;
                         if ($v['cost'] !== '' && $cost === null) $errs[] = 'invalid cost "' . $v['cost'] . '"';
@@ -310,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         $insert->execute([
                             $code, $pid, $intakeId, $scheme, $instId, $v['course'],
-                            $levelId, $fieldId, $start, $end, $statusId, $cost, $uid,
+                            $levelId, $fieldId, $start, $planned, $end, $statusId, $cost, $uid,
                         ]);
                         $existingCombos[$combo] = true;
 
@@ -363,6 +371,7 @@ require_once __DIR__ . '/includes/header.php';
           <li><strong>Scheme</strong> must be <code>SCA</code>, <code>HEP</code> or <code>Other</code> (any letter case); blank stays blank to update later.</li>
           <li>New institutions, levels, fields, and statuses are created automatically; blank values stay blank to update later.</li>
           <li>Costs are in AUD and accept formats like <code>15000</code>, <code>A$15,000</code>, <code>15 000.50</code>.</li>
+          <li><strong>Planned End date</strong> is optional; when blank, the Study End date is used. Study End date is only kept for <code>Completed</code> awards.</li>
         </ul>
         <form method="post" enctype="multipart/form-data">
           <?= csrf_field() ?>

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($action === 'list') {
         $rows = db()->query(
             "SELECT s.id, s.scholarship_code, s.main_course_name, s.scheme,
-                    s.study_start_date, s.study_end_date, s.scholarship_cost,
+                    s.study_start_date, s.planned_end_date, s.study_end_date, s.scholarship_cost,
                     p.aapng_id, CONCAT(p.family_name, ', ', p.given_names) AS participant,
                     iy.year AS intake_year, i.name AS institution,
                     sl.name AS study_level, f.name AS field_of_study, st.name AS status
@@ -68,9 +68,9 @@ api_verify_csrf();
 $in = api_input();
 
 if ($action === 'save') {
-    // Add / edit covers the course details and the planned end date. The cost, the
-    // actual end date and the move to "Completed" belong to the finalise action
-    // below, so a finalised award's end date and status are never changed here.
+    // Add / edit covers the course details and the planned end date. The actual end
+    // date, the cost and the move to "Completed" belong to the finalise action below,
+    // so they are never written from here.
     $id = (int)($in['id'] ?? 0);
     $errors = [];
 
@@ -82,7 +82,7 @@ if ($action === 'save') {
     $levelId       = (int)($in['study_level_id'] ?? 0) ?: null;
     $fieldId       = (int)($in['field_of_study_id'] ?? 0) ?: null;
     $startDate     = trim((string)($in['study_start_date'] ?? '')) ?: null;
-    $endDate       = trim((string)($in['study_end_date'] ?? '')) ?: null;
+    $plannedEnd    = trim((string)($in['planned_end_date'] ?? '')) ?: null;
     $statusId      = (int)($in['status_id'] ?? 0) ?: null;
 
     $completedId = completed_status_id();
@@ -108,18 +108,14 @@ if ($action === 'save') {
     if (!$startDate)                        $errors['study_start_date'] = 'Study start date is required.';
     elseif (!is_valid_date($startDate))     $errors['study_start_date'] = 'Invalid date.';
 
-    if ($isFinalised) {
-        // The actual end date was confirmed at finalisation — only Amend changes it.
-        $endDate = $existing['study_end_date'];
-        if ($endDate && $startDate && $startDate > $endDate) {
-            $errors['study_start_date'] = 'Start date cannot be after the recorded end date.';
-        }
-    } elseif (!$endDate) {
-        $errors['study_end_date'] = 'Planned end date is required.';
-    } elseif (!is_valid_date($endDate)) {
-        $errors['study_end_date'] = 'Invalid date.';
-    } elseif ($startDate && $endDate < $startDate) {
-        $errors['study_end_date'] = 'End date cannot be before the start date.';
+    elseif ($existing && $existing['study_end_date'] && $startDate > $existing['study_end_date']) {
+        $errors['study_start_date'] = 'Start date cannot be after the actual end date (' . $existing['study_end_date'] . ').';
+    }
+
+    if (!$plannedEnd)                         $errors['planned_end_date'] = 'Planned end date is required.';
+    elseif (!is_valid_date($plannedEnd))      $errors['planned_end_date'] = 'Invalid date.';
+    elseif ($startDate && $plannedEnd < $startDate) {
+        $errors['planned_end_date'] = 'Planned end date cannot be before the start date.';
     }
 
     if ($isFinalised) {
@@ -145,11 +141,11 @@ if ($action === 'save') {
         $stmt = $pdo->prepare(
             'UPDATE scholarships SET participant_id=?, intake_year_id=?, institution_id=?,
                     main_course_name=?, scheme=?, study_level_id=?, field_of_study_id=?,
-                    study_start_date=?, study_end_date=?, status_id=?, updated_by=?
+                    study_start_date=?, planned_end_date=?, status_id=?, updated_by=?
              WHERE id = ?'
         );
         $stmt->execute([$participantId,$intakeYearId,$institutionId,$course,$scheme,$levelId,$fieldId,
-                        $startDate,$endDate,$statusId,$uid,$id]);
+                        $startDate,$plannedEnd,$statusId,$uid,$id]);
         json_out(true, ['id' => $id], 'Award updated successfully.');
     }
 
@@ -159,12 +155,12 @@ if ($action === 'save') {
         $stmt = $pdo->prepare(
             'INSERT INTO scholarships
                 (participant_id, intake_year_id, institution_id, main_course_name, scheme,
-                 study_level_id, field_of_study_id, study_start_date, study_end_date,
+                 study_level_id, field_of_study_id, study_start_date, planned_end_date,
                  status_id, created_by)
              VALUES (?,?,?,?,?,?,?,?,?,?,?)'
         );
         $stmt->execute([$participantId,$intakeYearId,$institutionId,$course,$scheme,$levelId,$fieldId,
-                        $startDate,$endDate,$statusId,$uid]);
+                        $startDate,$plannedEnd,$statusId,$uid]);
         $newId = (int)$pdo->lastInsertId();
 
         $year = '0000';
@@ -186,8 +182,7 @@ if ($action === 'save') {
 }
 
 if ($action === 'finalise') {
-    // Closes off an award: confirms the actual end date (replacing the planned one),
-    // records the cost, and sets the
+    // Closes off an award: records the actual end date and cost, and sets the
     // status to "Completed". Staff can finalise once; amending a finalised award
     // is reserved for administrators.
     $id      = (int)($in['id'] ?? 0);

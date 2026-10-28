@@ -103,8 +103,8 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-6">
               <label class="field-label">Planned end date <span class="text-danger">*</span></label>
-              <input type="date" class="form-control" name="study_end_date" id="plannedEndDate" required>
-              <div class="form-text" id="endDateHint">The actual end date is confirmed when the award is finalised.</div>
+              <input type="date" class="form-control" name="planned_end_date" required>
+              <div class="form-text">The actual end date is recorded when the award is finalised.</div>
             </div>
           </div>
 
@@ -358,12 +358,8 @@ async function openAwardForm(id = null, preselectParticipant = null) {
     setParticipantField(preselectParticipant, false);
   }
 
-  // A finalised award keeps its status and actual end date; the server enforces the same rule.
+  // A finalised award keeps its status; the server enforces the same rule.
   statusSelect.disabled = finalised;
-  document.getElementById('plannedEndDate').disabled = finalised;
-  document.getElementById('endDateHint').textContent = finalised
-    ? 'Actual end date, confirmed at finalisation.'
-    : 'The actual end date is confirmed when the award is finalised.';
   document.getElementById('statusHint').innerHTML = finalised
     ? 'This award is finalised. ' + (IS_ADMIN ? 'Use <strong>Amend</strong> to change the end date or cost.' : 'Ask an administrator to amend the end date or cost.')
     : 'Use <strong>Finalise</strong> on the awards list to mark an award as completed.';
@@ -402,10 +398,10 @@ async function openFinalise(id) {
   const amending = isCompleted(a.status);
 
   form.elements.id.value = a.id;
-  form.elements.study_end_date.value = a.study_end_date || '';
+  form.elements.study_end_date.value = a.study_end_date || a.planned_end_date || '';
   form.elements.scholarship_cost.value = a.scholarship_cost ?? '';
 
-  // Starts from the planned end date; it has to fall between the start date and today.
+  // Suggest the planned end date; the actual one has to fall between the start date and today.
   const endInput = form.elements.study_end_date;
   endInput.min = a.study_start_date || '';
   endInput.max = new Date().toLocaleDateString('en-CA');   // en-CA formats as YYYY-MM-DD
@@ -415,7 +411,7 @@ async function openFinalise(id) {
       <span class="id-chip">${esc(a.scholarship_code)}</span>
       <strong>${esc(a.participant)}</strong>
     </div>
-    <div class="text-muted small">${esc(a.main_course_name)} · started ${esc(a.study_start_date) || '—'}</div>`;
+    <div class="text-muted small">${esc(a.main_course_name)} · ${esc(a.study_start_date) || '—'} to ${esc(a.planned_end_date) || '—'} (planned)</div>`;
 
   document.getElementById('finaliseModalTitle').innerHTML = amending
     ? '<i class="bi bi-pencil-square me-2"></i>Amend finalised award'
@@ -468,7 +464,9 @@ async function viewAward(id) {
       <dt>Participant</dt><dd>${esc(a.participant)} (${esc(a.aapng_id)})</dd>
       <dt>Scheme</dt><dd>${a.scheme ? `<span class="sc-badge sc-${esc(a.scheme)}">${esc(a.scheme)}</span>` : '—'}</dd>
       <dt>Study start</dt><dd>${esc(a.study_start_date) || '—'}</dd>
-      <dt>${isCompleted(a.status) ? 'Study end' : 'Planned end'}</dt><dd>${esc(a.study_end_date) || '—'}</dd>
+      <dt>Status</dt><dd>${esc(a.status) || '—'}</dd>
+      <dt>Planned end</dt><dd>${esc(a.planned_end_date) || '—'}</dd>
+      <dt>Actual end</dt><dd>${a.study_end_date ? esc(a.study_end_date) : '<span class="text-muted">Not finalised yet</span>'}</dd>
       <dt>Cost</dt><dd>${a.scholarship_cost ? 'A$ ' + Number(a.scholarship_cost).toLocaleString('en-AU', { minimumFractionDigits: 2 }) : '—'}</dd>
       <dt>Created</dt><dd>${esc(a.created_at)}</dd>
       <dt>Last updated</dt><dd>${esc(a.updated_at)}</dd>
